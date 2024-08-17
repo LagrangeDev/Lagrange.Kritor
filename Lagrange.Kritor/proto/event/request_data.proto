@@ -1,0 +1,35 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+syntax = "proto3";
+
+package kritor.event;
+
+option csharp_namespace = "Kritor.Event";
+option java_multiple_files = true;
+option java_package = "io.kritor.event";
+option go_package = "grpc/kritor/event";
+
+message FriendApplyRequest {
+  string applier_uid = 1;
+  uint64 applier_uin = 2;
+  string message = 3;
+}
+
+message GroupApplyRequest {
+  uint64 group_id = 1;
+  string applier_uid = 2;
+  uint64 applier_uin = 3;
+  string inviter_uid = 4;
+  uint64 inviter_uin = 5;
+  string reason = 6;
+}
+
+message InvitedJoinGroupRequest {
+  uint64 group_id = 1;
+  string inviter_uid = 2;
+  uint64 inviter_uin = 3;
+}

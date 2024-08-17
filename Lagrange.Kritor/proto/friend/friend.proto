@@ -1,0 +1,125 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+syntax = "proto3";
+
+package kritor.friend;
+
+option csharp_namespace = "Kritor.Friend";
+option java_multiple_files = true;
+option java_package = "io.kritor.friend";
+option go_package = "grpc/kritor/friend";
+
+import "proto/friend/firend_data.proto";
+
+service FriendService {
+  rpc GetFriendList (GetFriendListRequest) returns (GetFriendListResponse); // 获取好友列表
+
+  rpc GetFriendProfileCard(GetFriendProfileCardRequest) returns (GetFriendProfileCardResponse); // 获取名片（限好友）
+  rpc GetStrangerProfileCard(GetStrangerProfileCardRequest) returns (GetStrangerProfileCardResponse); // 获取陌生人信息
+  rpc SetProfileCard(SetProfileCardRequest) returns (SetProfileCardResponse); // 设置自己的名片
+  
+  rpc IsBlackListUser(IsBlackListUserRequest) returns (IsBlackListUserResponse); // 是否是黑名单用户
+  rpc VoteUser(VoteUserRequest) returns (VoteUserResponse); // 点赞好友
+
+  rpc GetUidByUin(GetUidByUinRequest) returns (GetUidByUinResponse); // 获取uid
+  rpc GetUinByUid(GetUinByUidRequest) returns (GetUinByUidResponse); // 获取uin
+
+  rpc UploadPrivateFile(PrivateChatFileRequest) returns (UploadPrivateChatFileResponse); // 上传私聊文件
+}
+
+message GetFriendListRequest {
+  optional bool refresh = 1; // 是否刷新好友列表
+}
+
+message GetFriendListResponse {
+  repeated FriendInfo friends_info = 1;
+}
+
+message GetFriendProfileCardRequest {
+  repeated string target_uids = 1;
+  repeated uint64 target_uins = 2;
+}
+
+message GetFriendProfileCardResponse {
+  repeated ProfileCard friends_profile_card = 1;
+}
+
+message GetStrangerProfileCardRequest {
+  repeated string target_uids = 1;
+  repeated uint64 target_uins = 2;
+}
+
+message GetStrangerProfileCardResponse {
+  repeated ProfileCard strangers_profile_card = 1;
+}
+
+message SetProfileCardRequest {
+  optional string nick = 1;
+  optional string company = 2;
+  optional string email = 3;
+  optional string college = 4;
+  optional string personal_note = 5;
+  optional uint32 birthday = 6;
+  optional uint32 age = 7;
+}
+
+message SetProfileCardResponse {
+}
+
+message IsBlackListUserRequest {
+  oneof target {
+    string target_uid = 1;
+    uint64 target_uin = 2;
+  }
+}
+
+message IsBlackListUserResponse {
+  bool is_black_list_user = 1;
+}
+
+message VoteUserRequest {
+  oneof target {
+    string target_uid = 1;
+    uint64 target_uin = 2;
+  }
+  uint32 vote_count = 3;
+}
+
+message VoteUserResponse {
+}
+
+message GetUidByUinRequest {
+  repeated uint64 target_uins = 1;
+}
+
+message GetUidByUinResponse {
+  map<uint64, string> uid_map = 1;
+}
+
+message GetUinByUidRequest {
+  repeated string target_uids = 1;
+}
+
+message GetUinByUidResponse {
+  map<string, uint64> uin_map = 1;
+}
+
+message PrivateChatFileRequest {
+  string user_id = 1; // 用户id
+  string file = 2; // 本地文件绝对路径
+  string name = 3; // 文件名称
+}
+
+message UploadPrivateChatFileResponse {
+  string file_id = 1; // 文件ID
+  string file_url = 2; // 文件URL
+  optional string file_name = 3; // 文件名
+  optional string file_size = 4; // 文件大小
+  optional string file_bizid = 5; // 文件bizid
+  optional string file_sha = 6; // 文件sha
+  optional string file_md5 = 7; // 文件md5
+}
