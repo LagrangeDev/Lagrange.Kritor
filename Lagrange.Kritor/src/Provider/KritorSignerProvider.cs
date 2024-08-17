@@ -23,8 +23,7 @@ public class KritorSignerProvider(string? url) : SignProvider {
 
         if (url is null) throw new Exception("Sign server is not configured");
 
-        HttpRequestMessage request = new()
-        {
+        using HttpRequestMessage request = new() {
             Method = HttpMethod.Post,
             RequestUri = new(url),
             Content = new StringContent(
