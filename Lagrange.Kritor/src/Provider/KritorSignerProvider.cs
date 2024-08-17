@@ -54,8 +54,4 @@ public class KritorSignerProvider(string? url) : SignProvider {
         string sign = signJson.GetString() ?? throw new Exception("Signer server returned an empty sign");
         return Convert.FromHexString(sign);
     }
-
-    public override bool Test() {
-        throw new NotImplementedException();
-    }
 }
