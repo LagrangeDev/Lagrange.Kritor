@@ -3,5 +3,5 @@
 ## Update Lagrange.Core
 
 ```bash
-# git submodule update --remote
+$ git submodule update --remote
 ```
