@@ -1,3 +1,6 @@
 [submodule "Lagrange.Core"]
 	path = Lagrange.Core
 	url = http://github.com/LagrangeDev/Lagrange.Core
+[submodule "kritor"]
+	path = kritor
+	url = https://github.com/KarinJS/kritor
