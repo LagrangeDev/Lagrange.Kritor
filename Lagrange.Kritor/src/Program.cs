@@ -25,13 +25,15 @@ internal class Program {
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.WebHost.ConfigureKestrel((context, sOptions) => {
-            IConfigurationSection kritorSection = context.Configuration.GetSection("Kritor");
+            IConfigurationSection kritorSection = context.Configuration
+                .GetRequiredSection("Kritor")
+                .GetRequiredSection("Network");
 
-            if (!IPAddress.TryParse(kritorSection.GetSection("Address").Get<string>(), out IPAddress? address)) {
+            if (!IPAddress.TryParse(kritorSection.GetRequiredSection("Address").Get<string>(), out IPAddress? address)) {
                 throw new Exception("Kritor.Address must not be null and can be resolved to IPAddress");
             }
 
-            int port = kritorSection.GetSection("Port").Get<int>();
+            int port = kritorSection.GetRequiredSection("Port").Get<int>();
             if (port is < 1 or > 65535) throw new Exception("Kritor.Port must not be null and be in the range 1-65535");
 
             sOptions.Listen(address, port, (lOptions) => lOptions.Protocols = HttpProtocols.Http2);

@@ -1,6 +1,6 @@
 # Lagrange.Kritor
 
-## Update Lagrange.Core
+## Update Submodule
 
 ```bash
 $ git submodule update --remote
