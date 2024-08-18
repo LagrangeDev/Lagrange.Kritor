@@ -21,8 +21,8 @@ public class QRCodeUtility {
         int yEnd = padding + length;
         int xEnd = padding + length;
 
-        console.Append('\n');
         for (int y = padding; y < yEnd; y += 2) {
+            console.Append('\n');
             for (int x = padding; x < xEnd; x++) {
                 bool up = matrix[y][x];
                 bool down = (y + 1) < matrix.Count && matrix[y + 1][x];
@@ -32,7 +32,6 @@ public class QRCodeUtility {
                 else if (!up && down) console.Append('▄');
                 else if (!up && !down) console.Append(' ');
             }
-            console.Append('\n');
         }
 
         return console.ToString();

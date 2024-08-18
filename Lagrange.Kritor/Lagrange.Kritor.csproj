@@ -6,16 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProtoBuf Include="kritor\protos\**\*.proto" AdditionalImportDirs="kritor\protos" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lagrange.Core\Lagrange.Core\Lagrange.Core.csproj" />
+    <ProjectReference Include="..\Kritor\Kritor.csproj" />
   </ItemGroup>
 
 </Project>

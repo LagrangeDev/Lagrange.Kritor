@@ -66,20 +66,19 @@ internal class Program {
     }
 
     private static BotConfig BotConfigFactory(IServiceProvider provider) {
-        IConfiguration config = provider
-            .GetRequiredService<IConfiguration>()
-            .GetRequiredSection("Core")
-            .GetRequiredSection("Protocol");
+        IConfiguration coreConfig = provider.GetRequiredService<IConfiguration>().GetRequiredSection("Core");
+        IConfiguration protocolConfig = coreConfig.GetRequiredSection("Protocol");
+        IConfiguration serverConfig = coreConfig.GetRequiredSection("Server");
 
         return new BotConfig() {
-            Protocol = config.GetSection("Platform").Get<string>() switch {
+            Protocol = protocolConfig.GetSection("Platform").Get<string>() switch {
                 "Windows" => Protocols.Windows,
                 "MacOs" => Protocols.MacOs,
                 "Linux" or null => Protocols.Linux,
                 string protocol => throw new Exception($"Unknown Core.Protocol.Platform: {protocol}")
             },
-            AutoReconnect = config.GetSection("AutoReconnect").Get<bool>(),
-            GetOptimumServer = config.GetSection("GetOptimumServer").Get<bool>(),
+            AutoReconnect = serverConfig.GetSection("AutoReconnect").Get<bool>(),
+            GetOptimumServer = serverConfig.GetSection("GetOptimumServer").Get<bool>(),
             CustomSignProvider = provider.GetRequiredService<SignProvider>(),
         };
     }

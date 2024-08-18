@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.OneBot", "Lagrange
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Kritor", "Lagrange.Kritor\Lagrange.Kritor.csproj", "{86637754-0539-464F-A2B3-44E22CC8D21A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kritor", "Kritor\Kritor.csproj", "{33BD8609-C925-4E1E-AE74-7B18A5E09128}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{86637754-0539-464F-A2B3-44E22CC8D21A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86637754-0539-464F-A2B3-44E22CC8D21A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86637754-0539-464F-A2B3-44E22CC8D21A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33BD8609-C925-4E1E-AE74-7B18A5E09128}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33BD8609-C925-4E1E-AE74-7B18A5E09128}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33BD8609-C925-4E1E-AE74-7B18A5E09128}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33BD8609-C925-4E1E-AE74-7B18A5E09128}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
