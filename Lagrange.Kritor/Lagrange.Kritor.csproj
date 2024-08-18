@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProtoBuf Include="..\protos\**\*.proto" Link="proto" AdditionalImportDirs="..\protos" GrpcServices="Server" />
+    <ProtoBuf Include="kritor\protos\**\*.proto" AdditionalImportDirs="kritor\protos" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
