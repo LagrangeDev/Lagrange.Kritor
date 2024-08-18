@@ -10,6 +10,7 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.Kritor.Provider;
 using Lagrange.Kritor.Service;
+using Lagrange.Kritor.Service.Grpc.Kritor.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -52,6 +53,7 @@ internal class Program {
 
         var app = builder.Build();
 
+        app.MapGrpcService<KritorAuthenticationService>();
         app.MapGet("/", () => "Hey kid, you're supposed to use gRPC to access it, not a browser.");
 
         app.Run();

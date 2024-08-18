@@ -55,12 +55,12 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
     }
 
     public override Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context) {
-        if (_enabled) return Task.FromResult(AuthenticateResponse.Ok());
-
         if (request.Account != _uin) {
             _logger.LogAuthenticationAccountFailed(context.Peer);
             return Task.FromResult(AuthenticateResponse.LogicError("Account or Ticket does not match"));
         }
+        
+        if (!_enabled) return Task.FromResult(AuthenticateResponse.Ok());
 
         if (request.Ticket != _super) {
             _lock.EnterReadLock();
