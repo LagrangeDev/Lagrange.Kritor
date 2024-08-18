@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Lagrange.Kritor.Utility;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using Lagrange.Kritor.Interceptor;
 
 namespace Lagrange.Kritor;
 internal class Program {
@@ -46,10 +50,12 @@ internal class Program {
         builder.Services.AddSingleton(BotKeystoreFactory);
         builder.Services.AddSingleton(BotContextFactory);
 
+        builder.Services.AddSingleton(AuthenticatorFactory);
+
         builder.Services.AddHostedService<BotLoggerService>();
         builder.Services.AddHostedService<BotLoginService>();
 
-        builder.Services.AddGrpc();
+        builder.Services.AddGrpc((options) => options.Interceptors.Add<AuthenticatorInterceptor>());
 
         var app = builder.Build();
 
@@ -114,5 +120,33 @@ internal class Program {
         BotKeystore keystore = provider.GetRequiredService<BotKeystore>();
 
         return BotFactory.Create(config, device, keystore);
+    }
+
+    private static Authenticator AuthenticatorFactory(IServiceProvider provider) {
+        ILogger<Authenticator> logger = provider.GetRequiredService<ILogger<Authenticator>>();
+
+        IConfigurationSection config = provider.GetRequiredService<IConfiguration>()
+            .GetRequiredSection("Kritor")
+            .GetRequiredSection("Authentication");
+
+        BotContext bot = provider.GetRequiredService<BotContext>();
+
+        bool enabled = config.GetRequiredSection("Enabled").Get<bool>();
+
+        return new(
+            logger,
+            enabled,
+            enabled
+                ? config.GetRequiredSection("SuperTicket").Get<string>()
+                    ?? throw new Exception("When Enabled is true, SuperTicket cannot be null")
+                : "",
+            bot.BotUin.ToString(),
+            enabled
+                ? config.GetRequiredSection("Tickets").GetChildren()
+                    .Select((tickets) => {
+                        return tickets.Get<string>() ?? throw new Exception("When Enabled is true, Tickets cannot be null");
+                    }).ToArray()
+                : []
+        );
     }
 }
