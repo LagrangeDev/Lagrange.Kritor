@@ -28,8 +28,6 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
 
     private readonly List<string> _tickets;
 
-    private readonly ReaderWriterLockSlim _lock;
-
     public KritorAuthenticationService(ILogger<KritorAuthenticationService> logger, IConfiguration rootConfig, BotContext bot) {
         _logger = logger;
 
@@ -50,8 +48,6 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
                     return tickets.Get<string>() ?? throw new Exception("When Enabled is true, Tickets cannot be null");
                 }).ToList()
             : [];
-
-        _lock = new();
     }
 
     public override Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context) {
@@ -59,17 +55,14 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
             _logger.LogAuthenticationAccountFailed(context.Peer);
             return Task.FromResult(AuthenticateResponse.LogicError("Account or Ticket does not match"));
         }
-        
+
         if (!_enabled) return Task.FromResult(AuthenticateResponse.Ok());
 
         if (request.Ticket != _super) {
-            _lock.EnterReadLock();
-            try {
-                if (_tickets.Contains(request.Ticket)) {
-                    _logger.LogAuthenticateTicketFiled(context.Peer);
-                    return Task.FromResult(AuthenticateResponse.LogicError("Account or Ticket does not match"));
-                }
-            } finally { _lock.ExitReadLock(); }
+            if (!_tickets.Contains(request.Ticket)) {
+                _logger.LogAuthenticateTicketFiled(context.Peer);
+                return Task.FromResult(AuthenticateResponse.LogicError("Account or Ticket does not match"));
+            }
         }
 
         return Task.FromResult(AuthenticateResponse.Ok());
@@ -82,69 +75,25 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
     public override Task<GetTicketResponse> GetTicket(GetTicketRequest request, ServerCallContext context) {
         if (!_enabled) return Task.FromResult(GetTicketResponse.Error("Authentication is not enabled"));
 
+        if (request.SuperTicket != _super) {
+            _logger.LogAuthenticateTicketFiled(context.Peer);
+            return Task.FromResult(GetTicketResponse.Error("SuperTicket does not match"));
+        }
+
         if (request.Account != _uin) {
             _logger.LogAuthenticationAccountFailed(context.Peer);
             return Task.FromResult(GetTicketResponse.Error("Account does not match"));
         }
 
-        if (request.SuperTicket != _super) {
-            _logger.LogAuthenticateTicketFiled(context.Peer);
-            return Task.FromResult(GetTicketResponse.Error("Account does not match"));
-        }
-
-        _lock.EnterReadLock();
-        try {
-            return Task.FromResult(GetTicketResponse.Ok(_tickets));
-        } finally { _lock.ExitReadLock(); }
+        return Task.FromResult(GetTicketResponse.Ok(_tickets));
     }
 
-    public override async Task<AddTicketResponse> AddTicket(AddTicketRequest request, ServerCallContext context) {
-        if (!_enabled) return AddTicketResponse.Error("Authentication is not enabled");
+    // TODO: AddTicket
 
-        if (request.SuperTicket != _super) {
-            _logger.LogAuthenticateTicketFiled(context.Peer);
-            return AddTicketResponse.Error("SuperTicket does not match");
-        }
-
-        if (request.Account != _uin) return AddTicketResponse.Error("Account does not match");
-
-        _lock.EnterReadLock();
-        try {
-            _tickets.Add(request.Ticket);
-
-            Stream stream = File.Open("appsettings.json", FileMode.Open);
-            JsonObject json = JsonSerializer.Deserialize<JsonObject>(stream)
-                ?? throw new Exception("Unable to parse the appsettings.json file");
-
-            JsonNode? kritor = json["Kritor"];
-            if (kritor == null) {
-                kritor = new JsonObject();
-                json["Kritor"] = kritor;
-            }
-
-            JsonNode? authentication = kritor["Authentication"];
-            if (authentication == null) {
-                authentication = new JsonObject();
-                kritor["Authentication"] = authentication;
-            }
-
-            authentication["Tickets"] = new JsonArray(_tickets.Select(ticket => JsonValue.Create(ticket)).ToArray());
-
-            await stream.WriteAsync(Encoding.UTF8.GetBytes(json.ToJsonString()));
-
-            return AddTicketResponse.Ok();
-        } catch (Exception e) {
-            _tickets.Remove(request.Ticket);
-            _logger.LogAddTicketFiled(e);
-            return AddTicketResponse.Error("Check the Lagrange.Core log for details.");
-        } finally { _lock.ExitReadLock(); }
-    }
+    // TODO: DeleteTicket
 }
 
 public static partial class KritorAuthenticationServiceLogger {
-    [LoggerMessage(EventId = 997, Level = LogLevel.Error, Message = "AddTicketFiled")]
-    public static partial void LogAddTicketFiled(this ILogger<KritorAuthenticationService> logger, Exception e);
-
     [LoggerMessage(EventId = 998, Level = LogLevel.Error, Message = "AuthenticationTicketFailed in {method} from {peer}")]
     public static partial void LogAuthenticateTicketFiled(this ILogger<KritorAuthenticationService> logger, string peer, [CallerMemberName] string method = "");
 

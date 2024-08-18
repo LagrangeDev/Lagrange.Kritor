@@ -10,7 +10,7 @@ public partial class GetTicketResponse {
     }
 
     public static GetTicketResponse Ok(string msg, List<string> tickets) {
-        return new(TicketOperationResponseCode.Error, msg, tickets);
+        return new(TicketOperationResponseCode.Ok, msg, tickets);
     }
 
     public static GetTicketResponse Ok(List<string> tickets) {
