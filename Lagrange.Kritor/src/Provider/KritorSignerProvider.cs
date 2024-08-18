@@ -9,10 +9,16 @@ using Lagrange.Core.Utility.Sign;
 
 namespace Lagrange.Kritor.Provider;
 
-public class KritorSignerProvider(string? url) : SignProvider {
-    private readonly byte[] _dummy = new byte[35];
+public class KritorSignerProvider(string? url, string? proxy) : SignProvider {
+    private readonly string? _url = url;
 
-    private readonly HttpClient _client = new();
+    private readonly HttpClient _client = new(new HttpClientHandler {
+        Proxy = string.IsNullOrEmpty(proxy) ? null : new WebProxy() {
+            Address = new Uri(proxy),
+            BypassProxyOnLocal = false,
+            UseDefaultCredentials = false,
+        },
+    }, true);
 
     public override byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? e, out string? t) {
         // result
@@ -21,11 +27,11 @@ public class KritorSignerProvider(string? url) : SignProvider {
 
         if (!WhiteListCommand.Contains(cmd)) return null;
 
-        if (url is null) throw new Exception("Sign server is not configured");
+        if (_url is null) return null;
 
         using HttpRequestMessage request = new() {
             Method = HttpMethod.Post,
-            RequestUri = new(url),
+            RequestUri = new(_url),
             Content = new StringContent(
                 $"{{\"cmd\":\"{cmd}\",\"seq\":{seq},\"src\":\"{Convert.ToHexString(body)}\"}}",
                 new MediaTypeHeaderValue("application/json")

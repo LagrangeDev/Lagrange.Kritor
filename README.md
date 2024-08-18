@@ -3,7 +3,7 @@
 ## Update Submodule
 
 ```bash
-$ git submodule update --remote
+git submodule update --remote
 ```
 
 ## Config
@@ -18,9 +18,14 @@ $ git submodule update --remote
     "Core": {
         "Protocol": {
             "Platform": "Linux",
+            "Signer":{
+                "Url": "",
+                "Proxy": "http://127.0.0.1:9090"
+            }
+        },
+        "Server": {
             "AutoReconnect": true,
-            "GetOptimumServer": true,
-            "SignerUrl": ""
+            "GetOptimumServer": true
         }
     },
     "Kritor": {
@@ -28,9 +33,15 @@ $ git submodule update --remote
             "Address": "0.0.0.0",
             "Port": 9000
         },
+        "Authentication": {
+            "Enabled": false,
+            "SuperTicket": "",
+            "Tickets": []
+        },
         "Message": {
             "IgnoreSelf": false
         }
     }
 }
+
 ```

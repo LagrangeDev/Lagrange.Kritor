@@ -60,9 +60,10 @@ internal class Program {
     private static SignProvider SignProviderFactory(IServiceProvider provider) {
         IConfiguration config = provider.GetRequiredService<IConfiguration>()
                 .GetRequiredSection("Core")
-                .GetRequiredSection("Protocol");
+                .GetRequiredSection("Protocol")
+                .GetRequiredSection("Signer");
 
-        return new KritorSignerProvider(config.GetSection("SignerUrl").Get<string>());
+        return new KritorSignerProvider(config.GetSection("Url").Get<string>(), config.GetSection("Proxy").Get<string>());
     }
 
     private static BotConfig BotConfigFactory(IServiceProvider provider) {
