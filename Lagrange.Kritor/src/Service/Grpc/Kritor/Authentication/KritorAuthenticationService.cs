@@ -83,12 +83,12 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
         if (!_enabled) return Task.FromResult(GetTicketResponse.Error("Authentication is not enabled"));
 
         if (request.Account != _uin) {
-            _logger.LogAuthenticationAccountFailed(peer: context.Peer);
+            _logger.LogAuthenticationAccountFailed(context.Peer);
             return Task.FromResult(GetTicketResponse.Error("Account does not match"));
         }
 
         if (request.SuperTicket != _super) {
-            _logger.LogAuthenticateTicketFiled(peer: context.Peer);
+            _logger.LogAuthenticateTicketFiled(context.Peer);
             return Task.FromResult(GetTicketResponse.Error("Account does not match"));
         }
 
@@ -102,7 +102,7 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
         if (!_enabled) return AddTicketResponse.Error("Authentication is not enabled");
 
         if (request.SuperTicket != _super) {
-            _logger.LogAuthenticateTicketFiled(peer: context.Peer);
+            _logger.LogAuthenticateTicketFiled(context.Peer);
             return AddTicketResponse.Error("SuperTicket does not match");
         }
 
