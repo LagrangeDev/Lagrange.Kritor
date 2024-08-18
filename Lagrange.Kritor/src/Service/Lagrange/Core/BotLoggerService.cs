@@ -8,7 +8,7 @@ using System;
 using Lagrange.Core.Event.EventArg;
 using Microsoft.Extensions.Logging;
 
-namespace Lagrange.Kritor.Service;
+namespace Lagrange.Kritor.Service.Lagrange.Core;
 
 public class BotLoggerService(ILogger<BotContext> logger, BotContext bot) : IHostedService {
     public Task StartAsync(CancellationToken token) {

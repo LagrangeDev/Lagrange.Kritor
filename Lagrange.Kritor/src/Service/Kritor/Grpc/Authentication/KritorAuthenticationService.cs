@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Kritor.Authentication;
@@ -15,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static Kritor.Authentication.AuthenticationService;
 
-namespace Lagrange.Kritor.Service.Grpc.Kritor.Authentication;
+namespace Lagrange.Kritor.Service.Kritor.Grpc.Authentication;
 
 public class KritorAuthenticationService : AuthenticationServiceBase {
     private readonly ILogger<KritorAuthenticationService> _logger;
@@ -87,10 +82,6 @@ public class KritorAuthenticationService : AuthenticationServiceBase {
 
         return Task.FromResult(GetTicketResponse.Ok(_tickets));
     }
-
-    // TODO: AddTicket
-
-    // TODO: DeleteTicket
 }
 
 public static partial class KritorAuthenticationServiceLogger {

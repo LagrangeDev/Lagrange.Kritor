@@ -5,11 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Kritor.Utility;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MsLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace Lagrange.Kritor.Service;
+namespace Lagrange.Kritor.Service.Lagrange.Core;
 
 public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLifetime lifetime, BotContext bot) : IHostedService {
     private readonly IHostApplicationLifetime _lifetime = lifetime;
@@ -33,7 +35,7 @@ public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLi
         return Task.CompletedTask;
     }
 
-    private void HandleBotOnlineEvent(BotContext bot, Core.Event.EventArg.BotOnlineEvent e) {
+    private void HandleBotOnlineEvent(BotContext bot, BotOnlineEvent e) {
         File.WriteAllText("device.json", JsonSerializer.Serialize(bot.UpdateDeviceInfo()));
         File.WriteAllText("keystore.json", JsonSerializer.Serialize(bot.UpdateKeystore()));
 
@@ -42,9 +44,9 @@ public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLi
 }
 
 public static partial class LoginServiceLogger {
-    [LoggerMessage(EventId = 100, Level = LogLevel.Information, Message = "{qrcode}")]
+    [LoggerMessage(EventId = 100, Level = MsLogLevel.Information, Message = "{qrcode}")]
     public static partial void LogQrCode(this ILogger<BotLoginService> logger, string qrcode);
 
-    [LoggerMessage(EventId = 200, Level = LogLevel.Information, Message = "Bot {uin} Logged")]
+    [LoggerMessage(EventId = 200, Level = MsLogLevel.Information, Message = "Bot {uin} Logged")]
     public static partial void LogLoginSuccess(this ILogger<BotLoginService> logger, uint uin);
 }
