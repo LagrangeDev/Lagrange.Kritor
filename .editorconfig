@@ -79,9 +79,8 @@ dotnet_style_allow_statement_immediately_after_block_experimental = true
 # var preferences
 # darkcwk dot't like var
 csharp_style_var_elsewhere = false
-# and don't like built in types use var
 csharp_style_var_for_built_in_types = false
-csharp_style_var_when_type_is_apparent = true
+csharp_style_var_when_type_is_apparent = false
 
 # Expression-bodied members
 csharp_style_expression_bodied_accessors = true:silent
@@ -157,8 +156,8 @@ csharp_new_line_between_query_expression_clauses = true
 # Indentation preferences
 csharp_indent_block_contents = true
 csharp_indent_braces = false
-csharp_indent_case_contents = true
-csharp_indent_case_contents_when_block = true
+csharp_indent_case_contents = false
+csharp_indent_case_contents_when_block = false
 csharp_indent_labels = one_less_than_current
 csharp_indent_switch_labels = true
 

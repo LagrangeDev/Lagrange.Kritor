@@ -20,6 +20,8 @@ using Lagrange.Kritor.Utility;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using Lagrange.Kritor.Interceptor;
+using Lagrange.Kritor.Service.Kritor.Grpc.Core;
+using Lagrange.Kritor.Service.Kritor.Grpc.Event;
 
 namespace Lagrange.Kritor;
 internal class Program {
@@ -59,6 +61,9 @@ internal class Program {
 
         var app = builder.Build();
 
+        app.MapGrpcService<KritorAuthenticationService>();
+        app.MapGrpcService<KritorCoreService>();
+        app.MapGrpcService<KritorEventService>();
         app.MapGrpcService<KritorAuthenticationService>();
         app.MapGet("/", () => "Hey kid, you're supposed to use gRPC to access it, not a browser.");
 

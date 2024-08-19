@@ -16,10 +16,10 @@ public class KritorAuthenticationService(ILogger<KritorAuthenticationService> lo
     public override Task<AuthenticateResponse> Authenticate(AuthenticateRequest request, ServerCallContext context) {
         if (!_authenticator.Authenticate(request.Account, request.Ticket)) {
             _logger.LogAuthenticationFailed(context.Peer);
-            return Task.FromResult(AuthenticateResponse.LogicError("Account or Ticket does not match"));
+            return Task.FromResult(AuthenticateResponse.CreateLogicError("Account or Ticket does not match"));
         }
 
-        return Task.FromResult(AuthenticateResponse.Ok());
+        return Task.FromResult(AuthenticateResponse.CreateOk());
     }
 
     public override Task<GetAuthenticationStateResponse> GetAuthenticationState(GetAuthenticationStateRequest request, ServerCallContext context) {
@@ -27,14 +27,14 @@ public class KritorAuthenticationService(ILogger<KritorAuthenticationService> lo
     }
 
     public override Task<GetTicketResponse> GetTicket(GetTicketRequest request, ServerCallContext context) {
-        if (!_authenticator.IsEnabled) return Task.FromResult(GetTicketResponse.Error("Authentication is not enabled"));
+        if (!_authenticator.IsEnabled) return Task.FromResult(GetTicketResponse.CreateError("Authentication is not enabled"));
 
         if (_authenticator.Authenticate(request.SuperTicket, true)) {
             _logger.LogAuthenticationFailed(context.Peer);
-            return Task.FromResult(GetTicketResponse.Error("Account or Ticket does not match"));
+            return Task.FromResult(GetTicketResponse.CreateError("Account or Ticket does not match"));
         }
 
-        return Task.FromResult(GetTicketResponse.Ok(_authenticator.Tickets));
+        return Task.FromResult(GetTicketResponse.CreateOk(_authenticator.Tickets));
     }
 }
 
