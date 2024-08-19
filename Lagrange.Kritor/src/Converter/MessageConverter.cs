@@ -20,7 +20,7 @@ public static class MessageConverter {
             TextEntity text => Element.CreateText(text.Text),
             MentionEntity mention => Element.CreateAt(mention.Uin),
             FaceEntity face => Element.CreateFace(face.FaceId),
-            ForwardEntity forward => Element.CreateReply($"{new DateTimeOffset(forward.Time).ToUnixTimeSeconds():D32}{forward.MessageId:D10}{forward.Sequence:D10}LagrangeCore"),
+            ForwardEntity forward => Element.CreateReply($"{new DateTimeOffset(forward.Time).ToUnixTimeSeconds():D32}_{forward.MessageId:D20}_{forward.Sequence:D10}"),
             ImageEntity image => Element.CreateCommonFileUrl(image.ImageUrl),
             RecordEntity record => Element.CreateVoiceUrl(record.AudioUrl),
             VideoEntity video => Element.CreateVideoUrl(video.VideoUrl),

@@ -10,7 +10,7 @@ public static class EventConverter {
     public static EventStructure ToPushMessageBody(this GroupMessageEvent @event) {
         long timestamp = new DateTimeOffset(@event.Chain.Time).ToUnixTimeSeconds();
 
-        string messageId = $"{timestamp:D32}{@event.Chain.MessageId:D10}{@event.Chain.Sequence:D10}LagrangeCore";
+        string messageId = $"{timestamp:D32}_{@event.Chain.MessageId:D20}_{@event.Chain.Sequence:D10}";
 
         return EventStructure.CreateMessage(
             (ulong)timestamp,
