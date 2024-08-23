@@ -7,17 +7,9 @@ public partial class EventStructure {
         Type = type;
     }
 
-    public static EventStructure CreateMessage(ulong time, string messageId, ulong messageSeq, Contact contact, Sender sender, params Element[] elements) {
+    public static EventStructure CreateGroupMessage(ulong time, string messageId, ulong messageSeq, GroupSender group, params Element[] elements) {
         return new(EventType.Message) {
-            Message = PushMessageBody.Create(time, messageId, messageSeq, contact, sender, elements)
+            Message = PushMessageBody.CreateGroup(time, messageId, messageSeq, group, elements)
         };
-    }
-
-    public static EventStructure CreateRequest(RequestEvent request) {
-        return new(EventType.Request) { Request = request };
-    }
-
-    public static EventStructure CreateNotice(NoticeEvent notice) {
-        return new(EventType.Notice) { Notice = notice };
     }
 }

@@ -76,21 +76,21 @@ public partial class Element {
     //     return new() { Type = ElementType.MarketFace, MarketFace = ... };
     // }
 
-    // public static Element CreateForward( ... ) {
-    //     return new() { Type = ElementType.Forward, Forward = ... };
-    // }
+    public static Element CreateForward(string resId, string uniseq, string summary, string description) {
+        return new() { Type = ElementType.Forward, Forward = ForwardElement.Create(resId, uniseq, summary, description) };
+    }
 
     // public static Element CreateContact( ... ) {
     //     return new() { Type = ElementType.Contact, Contact = ... };
     // }
 
-    // public static Element CreateJson( ... ) {
-    //     return new() { Type = ElementType.Json, Json = ... };
-    // }
+    public static Element CreateJson(string json) {
+        return new() { Type = ElementType.Json, Json = JsonElement.Create(json) };
+    }
 
-    // public static Element CreateXml( ... ) {
-    //     return new() { Type = ElementType.Xml, Xml = ... };
-    // }
+    public static Element CreateXml(string xml) {
+        return new() { Type = ElementType.Xml, Xml = XmlElement.Create(xml) };
+    }
 
     // public static Element CreateFile( ... ) {
     //     return new() { Type = ElementType.File, File = ... };

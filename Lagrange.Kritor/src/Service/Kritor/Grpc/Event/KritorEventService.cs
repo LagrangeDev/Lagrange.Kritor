@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Kritor.Event;
 using Lagrange.Core;
-using Lagrange.Core.Event;
-using Lagrange.Core.Event.EventArg;
 using Lagrange.Kritor.Converter;
 using static Kritor.Event.EventService;
 

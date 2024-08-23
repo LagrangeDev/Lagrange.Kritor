@@ -22,6 +22,7 @@ using System.Linq;
 using Lagrange.Kritor.Interceptor;
 using Lagrange.Kritor.Service.Kritor.Grpc.Core;
 using Lagrange.Kritor.Service.Kritor.Grpc.Event;
+using System.Reflection;
 
 namespace Lagrange.Kritor;
 internal class Program {
@@ -29,6 +30,11 @@ internal class Program {
         // UTF8
         Console.OutputEncoding = Encoding.UTF8;
 
+        // Print Version
+        string version = Assembly.GetAssembly(typeof(Program))?
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "Unknown";
+        Console.WriteLine($"Lagrange.Kritor Version: {version}");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.WebHost.ConfigureKestrel((context, sOptions) => {
@@ -45,6 +51,10 @@ internal class Program {
 
             sOptions.Listen(address, port, (lOptions) => lOptions.Protocols = HttpProtocols.Http2);
         });
+        builder.Services.AddGrpc((options) => {
+            options.Interceptors.Add<AuthenticatorInterceptor>();
+            options.Interceptors.Add<KritorVersionInterceptor>();
+        });
 
         builder.Services.AddSingleton(SignProviderFactory);
         builder.Services.AddSingleton(BotConfigFactory);
@@ -57,14 +67,11 @@ internal class Program {
         builder.Services.AddHostedService<BotLoggerService>();
         builder.Services.AddHostedService<BotLoginService>();
 
-        builder.Services.AddGrpc((options) => options.Interceptors.Add<AuthenticatorInterceptor>());
-
         var app = builder.Build();
 
         app.MapGrpcService<KritorAuthenticationService>();
         app.MapGrpcService<KritorCoreService>();
         app.MapGrpcService<KritorEventService>();
-        app.MapGrpcService<KritorAuthenticationService>();
         app.MapGet("/", () => "Hey kid, you're supposed to use gRPC to access it, not a browser.");
 
         app.Run();

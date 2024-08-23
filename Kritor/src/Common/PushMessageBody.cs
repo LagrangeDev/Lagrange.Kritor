@@ -1,16 +1,18 @@
 namespace Kritor.Common;
 
 public partial class PushMessageBody {
-    private PushMessageBody(ulong time, string messageId, ulong messageSeq, Contact contact, Sender sender, Element[] elements) {
-        Time = time;
-        MessageId = messageId;
-        MessageSeq = messageSeq;
-        Contact = contact;
-        Sender = sender;
+    public PushMessageBody AddElements(params Element[] elements) {
         Elements.Add(elements);
+        return this;
     }
 
-    public static PushMessageBody Create(ulong time, string messageId, ulong messageSeq, Contact contact, Sender sender, params Element[] elements) {
-        return new(time, messageId, messageSeq, contact, sender, elements);
+    public static PushMessageBody CreateGroup(ulong time, string messageId, ulong messageSeq, GroupSender group, params Element[] elements) {
+        return new PushMessageBody() {
+            Time = time,
+            MessageId = messageId,
+            MessageSeq = messageSeq,
+            Scene = Scene.Group,
+            Group = group,
+        }.AddElements(elements);
     }
 }
