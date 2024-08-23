@@ -1,7 +1,23 @@
 namespace Kritor.Common;
 
 public partial class GroupSender {
-    public static GroupSender Create(string groupId, ulong uin, string nick) {
-        return new() { GroupId = groupId, Uin = uin, Nick = nick };
+    public GroupSender SetGroupId(string groupId) {
+        GroupId = groupId;
+        return this;
+    }
+
+    public GroupSender SetUid(string uid) {
+        Uid = uid;
+        return this;
+    }
+
+    public GroupSender SetUin(uint uin) {
+        Uin = uin;
+        return this;
+    }
+
+    public GroupSender SetNick(string nick) {
+        Nick = nick;
+        return this;
     }
 }

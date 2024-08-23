@@ -1,7 +1,8 @@
 namespace Kritor.Authentication;
 
 public partial class GetAuthenticationStateResponse {
-    public static GetAuthenticationStateResponse Create(bool isRequired) {
-        return new() { IsRequired = isRequired };
+    public GetAuthenticationStateResponse SetIsRequired(bool isRequired) {
+        IsRequired = isRequired;
+        return this;
     }
 }

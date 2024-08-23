@@ -3,13 +3,23 @@ using Kritor.Common;
 namespace Kritor.Event;
 
 public partial class EventStructure {
-    private EventStructure(EventType type) {
+    public EventStructure SetType(EventType type) {
         Type = type;
+        return this;
+    }
+    
+    public EventStructure SetMessage(PushMessageBody message) {
+        Message = message;
+        return this;
     }
 
-    public static EventStructure CreateGroupMessage(ulong time, string messageId, ulong messageSeq, GroupSender group, params Element[] elements) {
-        return new(EventType.Message) {
-            Message = PushMessageBody.CreateGroup(time, messageId, messageSeq, group, elements)
-        };
+    public EventStructure SetRequest(RequestEvent request) {
+        Request = request;
+        return this;
+    }
+
+    public EventStructure SetNotice(NoticeEvent notice) {
+        Notice = notice;
+        return this;
     }
 }

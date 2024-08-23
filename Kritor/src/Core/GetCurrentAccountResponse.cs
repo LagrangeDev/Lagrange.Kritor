@@ -1,13 +1,18 @@
 namespace Kritor.Core;
 
 public partial class GetCurrentAccountResponse {
-    private GetCurrentAccountResponse(string account_uid, ulong account_uin, string account_name) {
-        AccountUid = account_uid;
-        AccountUin = account_uin;
-        AccountName = account_name;
+    public GetCurrentAccountResponse SetAccountUid(string accountUid) {
+        AccountUid = accountUid;
+        return this;
+    }
+    
+    public GetCurrentAccountResponse SetAccountUin(string accountUin) {
+        AccountUid = accountUin;
+        return this;
     }
 
-    public static GetCurrentAccountResponse Create(string account_uid, ulong account_uin, string account_name) {
-        return new(account_uid, account_uin, account_name);
+    public GetCurrentAccountResponse SetAccountName(string accountName) {
+        AccountName = accountName;
+        return this;
     }
 }

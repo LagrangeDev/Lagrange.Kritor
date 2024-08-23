@@ -3,11 +3,13 @@ using static Kritor.Authentication.AuthenticateResponse.Types;
 namespace Kritor.Authentication;
 
 public partial class AuthenticateResponse {
-    public static AuthenticateResponse CreateOk(string msg = "Ok") {
-        return new() { Code = AuthenticateResponseCode.Ok, Msg = msg };
+    public AuthenticateResponse SetCode(AuthenticateResponseCode code) {
+        Code = code;
+        return this;
     }
 
-    public static AuthenticateResponse CreateLogicError(string msg) {
-        return new() { Code = AuthenticateResponseCode.LogicError, Msg = msg };
+    public AuthenticateResponse SetMsg(string msg) {
+        Msg = msg;
+        return this;
     }
 }

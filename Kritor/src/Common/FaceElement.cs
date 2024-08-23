@@ -1,11 +1,18 @@
 namespace Kritor.Common;
 
 public partial class FaceElement {
-    private FaceElement(uint id) {
+    public FaceElement SetId(uint id) {
         Id = id;
+        return this;
     }
 
-    public static FaceElement Create(uint id) {
-        return new(id);
+    public FaceElement SetIsBig(bool isBig) {
+        IsBig = isBig;
+        return this;
+    }
+
+    public FaceElement SetResult(uint result) {
+        Result = result;
+        return this;
     }
 }

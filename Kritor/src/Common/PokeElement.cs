@@ -1,7 +1,18 @@
 namespace Kritor.Common;
 
 public partial class PokeElement {
-    public static PokeElement Create(uint id, uint pokeType, uint strength) {
-        return new() { Id = id, PokeType = pokeType, Strength = strength };
+    public PokeElement SetId(uint id) {
+        Id = id;
+        return this;
+    }
+
+    public PokeElement SetPokeType(uint pokeType) {
+        PokeType = pokeType;
+        return this;
+    }
+
+    public PokeElement SetStrength(uint strength) {
+        Strength = strength;
+        return this;
     }
 }

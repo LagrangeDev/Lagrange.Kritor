@@ -1,11 +1,8 @@
 namespace Kritor.Common;
 
 public partial class ReplyElement {
-    private ReplyElement(string messageId) {
+    public ReplyElement SetMessageId(string messageId) {
         MessageId = messageId;
-    }
-
-    public static ReplyElement Create(string messageId) {
-        return new(messageId);
+        return this;
     }
 }

@@ -1,10 +1,6 @@
-using System.Linq;
 using System.Threading.Tasks;
-using Google.Protobuf.Reflection;
 using Grpc.Core;
-using Kritor.Authentication;
 using Lagrange.Core;
-using Lagrange.Kritor.Utility;
 using Microsoft.Extensions.Logging;
 using GrpcInterceptor = Grpc.Core.Interceptors.Interceptor;
 

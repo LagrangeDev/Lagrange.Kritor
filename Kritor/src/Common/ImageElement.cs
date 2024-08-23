@@ -4,10 +4,38 @@ using static Kritor.Common.ImageElement.Types;
 namespace Kritor.Common;
 
 public partial class ImageElement {
-    public static ImageElement CreateCommonImageUrl(string fileUrl, string? fileMd5, uint? subType) {
-        ImageElement image = new() { FileType = ImageType.Common, FileUrl = fileUrl };
-        if (fileMd5 != null) image.FileMd5 = fileMd5;
-        if (subType.HasValue) image.SubType = subType.Value;
-        return image;
+    public ImageElement SetFile(ByteString file) {
+        File = file;
+        return this;
+    }
+
+    public ImageElement SetFileName(string fileName) {
+        FileName = fileName;
+        return this;
+    }
+
+    public ImageElement SetFilePath(string filePath) {
+        FilePath = filePath;
+        return this;
+    }
+
+    public ImageElement SetFileUrl(string fileUrl) {
+        FileUrl = fileUrl;
+        return this;
+    }
+    
+    public ImageElement SetFileMd5(string fileMd5) {
+        FileMd5 = fileMd5;
+        return this;
+    }
+
+    public ImageElement SetSubType(uint subType) {
+        SubType = subType;
+        return this;
+    }
+
+    public ImageElement SetFileType(ImageType fileType) {
+        FileType = fileType;
+        return this;
     }
 }

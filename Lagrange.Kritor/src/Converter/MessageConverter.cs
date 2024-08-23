@@ -1,11 +1,14 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml;
 using Kritor.Common;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Lagrange.Kritor.Utility;
+using static Kritor.Common.Element.Types;
+using static Kritor.Common.ImageElement.Types;
 using CoreXmlEntity = Lagrange.Core.Message.Entity.XmlEntity;
+using KritorXmlElement = Kritor.Common.XmlElement;
 
 namespace Lagrange.Kritor.Converter;
 
@@ -20,14 +23,55 @@ public static class MessageConverter {
 
     public static Element? ToElement(this IMessageEntity entity) {
         return entity switch {
-            TextEntity text => Element.CreateText(text.Text),
-            MentionEntity mention => Element.CreateAt(mention.Uin),
-            FaceEntity face => Element.CreateFace(face.FaceId),
-            ForwardEntity forward => Element.CreateReply($"{new DateTimeOffset(forward.Time).ToUnixTimeSeconds():D32}_{forward.MessageId:D20}_{forward.Sequence:D10}"),
-            ImageEntity image => Element.CreateCommonFileUrl(image.ImageUrl),
-            RecordEntity record => Element.CreateVoiceUrl(record.AudioUrl),
-            VideoEntity video => Element.CreateVideoUrl(video.VideoUrl),
-            PokeEntity poke => Element.CreatePoke(0, poke.Type, poke.Strength),
+            TextEntity text => new Element()
+                .SetType(ElementType.Text)
+                .SetTextElement(new TextElement()
+                    .SetText(text.Text)
+                ),
+            MentionEntity mention => new Element()
+                .SetType(ElementType.At)
+                .SetAtElement(new AtElement()
+                    .SetUin(mention.Uin)
+                ),
+            FaceEntity face => new Element()
+                .SetType(ElementType.Face)
+                .SetFaceElement(new FaceElement()
+                    .SetId(face.FaceId)
+                    .SetIsBig(face.IsLargeFace)
+                ),
+            ForwardEntity forward => new Element()
+                .SetType(ElementType.Reply)
+                .SetReplyElement(new ReplyElement()
+                    .SetMessageId(MessageIdUtility.BuildMessageId(forward.Time, forward.MessageId, forward.Sequence))
+                ),
+            ImageEntity image => new Element()
+                .SetType(ElementType.Image)
+                .SetImageElement(new ImageElement()
+                    .SetFileUrl(image.ImageUrl)
+                    // .SetFileMd5(image.ImageHash) // TODO: Lagrange NotSupport
+                    // .SetSubType(image.SubType) // TODO: Lagrange IneternalValue
+                    .SetFileType(ImageType.Common)
+                ),
+            RecordEntity record => new Element()
+                .SetType(ElementType.Voice)
+                .SetVoiceElement(new VoiceElement()
+                    .SetFileUrl(record.AudioUrl)
+                // .SetFileMd5(record.AudioHash) // TODO: Lagrange Can But NotSupport
+                // .SetMagic(record.IsMagic) // TODO: Lagrange Can But NotSupport
+                ),
+            VideoEntity video => new Element()
+                .SetType(ElementType.Video)
+                .SetVideoElement(new VideoElement()
+                    .SetFileUrl(video.VideoUrl)
+                    .SetFileMd5(video.VideoHash)
+                ),
+            PokeEntity poke => new Element()
+                .SetType(ElementType.Poke)
+                .SetPokeElement(new PokeElement() // TODO: Lagrange Can But NotSupport Id 23 Poke
+                    .SetId(1)
+                    .SetPokeType(0)
+                    .SetStrength(poke.Strength)
+                ),
             CoreXmlEntity xml => xml.ToElement(),
             LightAppEntity lightApp => lightApp.ToElement(),
             _ => null,
@@ -42,7 +86,7 @@ public static class MessageConverter {
             return forward;
         }
 
-        return Element.CreateXml(xml.Xml);
+        return new Element().SetType(ElementType.Xml).SetXmlElement(new KritorXmlElement().SetXml(xml.Xml));
     }
 
     public static bool TryToForwardElement(this XmlDocument document, [NotNullWhen(true)] out Element? forward) {
@@ -65,11 +109,22 @@ public static class MessageConverter {
         string? description = msgNode.Attributes?["brief"]?.Value;
         if (description == null) return false;
 
-        forward = Element.CreateForward(resId, uniseq, summary, description);
+        forward = new Element()
+            .SetType(ElementType.Forward)
+            .SetForwardElement(new ForwardElement()
+                .SetResId(resId)
+                .SetUniseq(uniseq)
+                .SetSummary(summary)
+                .SetDescription(description)
+            );
         return true;
     }
 
     public static Element? ToElement(this LightAppEntity lightApp) {
-        return Element.CreateJson(lightApp.Payload);
+        return new Element()
+            .SetType(ElementType.Json)
+            .SetJsonElement(new JsonElement()
+                .SetJson(lightApp.Payload)
+            );
     }
 }

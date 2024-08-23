@@ -1,7 +1,23 @@
 namespace Kritor.Common;
 
 public partial class ForwardElement {
-    public static ForwardElement Create(string resId, string uniseq, string summary, string description) {
-        return new ForwardElement() { ResId = resId, Uniseq = uniseq, Summary = summary, Description = description };
+    public ForwardElement SetResId(string resId) {
+        ResId = resId;
+        return this;
+    }
+
+    public ForwardElement SetUniseq(string uniseq) {
+        Uniseq = uniseq;
+        return this;
+    }
+
+    public ForwardElement SetSummary(string summary) {
+        Summary = summary;
+        return this;
+    }
+
+    public ForwardElement SetDescription(string description) {
+        Description = description;
+        return this;
     }
 }

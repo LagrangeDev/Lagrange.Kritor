@@ -14,8 +14,6 @@ public class AuthenticatorInterceptor(ILogger<AuthenticatorInterceptor> logger, 
 
     private readonly Authenticator _authenticator = authenticator;
 
-    private readonly RpcException _permissionDeniedException = new(new(StatusCode.PermissionDenied, "Permission Denied"));
-
     private readonly string[] _sikp = [
         ..AllMethodFullPath(AuthenticationService.Descriptor)
     ];
@@ -29,12 +27,12 @@ public class AuthenticatorInterceptor(ILogger<AuthenticatorInterceptor> logger, 
 
         if (ticketEntry == null) {
             _logger.LogAuthenticationFailed(context.Method, context.Peer);
-            throw _permissionDeniedException;
+            throw new RpcException(new(StatusCode.PermissionDenied, "Permission Denied"));
         }
 
         if (!_authenticator.Authenticate(ticketEntry.Value)) {
             _logger.LogAuthenticationFailed(context.Method, context.Peer);
-            throw _permissionDeniedException;
+            throw new RpcException(new(StatusCode.PermissionDenied, "Permission Denied"));
         }
 
         return base.UnaryServerHandler(request, context, continuation);

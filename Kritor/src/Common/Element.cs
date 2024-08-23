@@ -1,106 +1,135 @@
-using Google.Protobuf;
 using static Kritor.Common.Element.Types;
 
 namespace Kritor.Common;
 
 public partial class Element {
-    public static Element CreateText(string text) {
-        return new() { Type = ElementType.Text, Text = TextElement.Create(text) };
+    public Element SetType(ElementType type) {
+        Type = type;
+        return this;
     }
 
-    public static Element CreateAt(ulong uin) {
-        return new() { Type = ElementType.At, At = AtElement.Create(uin) };
+    public Element SetTextElement(TextElement text) {
+        Text = text;
+        return this;
     }
 
-    public static Element CreateFace(uint id) {
-        return new() { Type = ElementType.Face, Face = FaceElement.Create(id) };
+    public Element SetAtElement(AtElement at) {
+        At = at;
+        return this;
     }
 
-    // public static Element CreateBubbleFace( ... ) {
-    //     return new(ElementType.BubbleFace) { BubbleFace = ... };
-    // }
-
-    public static Element CreateReply(string messageId) {
-        return new() { Type = ElementType.Reply, Reply = ReplyElement.Create(messageId) };
+    public Element SetFaceElement(FaceElement face) {
+        Face = face;
+        return this;
     }
 
-    public static Element CreateCommonFileUrl(string fileUrl, string? fileMd5 = null, uint? subType = null) {
-        return new() { Type = ElementType.Image, Image = ImageElement.CreateCommonImageUrl(fileUrl, fileMd5, subType) };
+    public Element SetBubbleFaceElement(BubbleFaceElement bubbleFace) {
+        BubbleFace = bubbleFace;
+        return this;
     }
 
-    public static Element CreateVoiceUrl(string fileUrl, string? fileMd5 = null, bool? magic = null) {
-        return new() { Type = ElementType.Voice, Voice = VoiceElement.CreateVoiceUrl(fileUrl, fileMd5, magic) };
+    public Element SetReplyElement(ReplyElement reply) {
+        Reply = reply;
+        return this;
     }
 
-    public static Element CreateVideoUrl(string fileUrl, string? fileMd5 = null) {
-        return new() { Type = ElementType.Video, Video = VideoElement.CreateVideoUrl(fileUrl, fileMd5) };
+    public Element SetImageElement(ImageElement image) {
+        Image = image;
+        return this;
     }
 
-    // public static Element CreateBasketball( ... ) {
-    //     return new() { Type = ElementType.Basketball, Basketball = ... };
-    // }
-
-    // public static Element CreateDice( ... ) {
-    //     return new() { Type = ElementType.Dice, Dice = ... };
-    // }
-
-    // public static Element CreateRps( ... ) {
-    //     return new() { Type = ElementType.Rps, Rps = ... };
-    // }
-
-    public static Element CreatePoke(uint id, uint pokeType, uint strength) {
-        return new() { Type = ElementType.Poke, Poke = PokeElement.Create(id, pokeType, strength) };
+    public Element SetVoiceElement(VoiceElement voice) {
+        Voice = voice;
+        return this;
     }
 
-    // public static Element CreateMusic( ... ) {
-    //     return new() { Type = ElementType.Music, Music = ... };
-    // }
-
-    // public static Element CreateWeather( ... ) {
-    //     return new() { Type = ElementType.Weather, Weather = ... };
-    // }
-
-    // public static Element CreateLocation( ... ) {
-    //     return new() { Type = ElementType.Location, Location = ... };
-    // }
-
-    // public static Element CreateShare( ... ) {
-    //     return new() { Type = ElementType.Share, Share = ... };
-    // }
-
-    // public static Element CreateGift( ... ) {
-    //     return new() { Type = ElementType.Gift, Gift = ... };
-    // }
-
-    // public static Element CreateMarketFace( ... ) {
-    //     return new() { Type = ElementType.MarketFace, MarketFace = ... };
-    // }
-
-    public static Element CreateForward(string resId, string uniseq, string summary, string description) {
-        return new() { Type = ElementType.Forward, Forward = ForwardElement.Create(resId, uniseq, summary, description) };
+    public Element SetVideoElement(VideoElement video) {
+        Video = video;
+        return this;
     }
 
-    // public static Element CreateContact( ... ) {
-    //     return new() { Type = ElementType.Contact, Contact = ... };
-    // }
-
-    public static Element CreateJson(string json) {
-        return new() { Type = ElementType.Json, Json = JsonElement.Create(json) };
+    public Element SetBasketballElement(BasketballElement basketball) {
+        Basketball = basketball;
+        return this;
     }
 
-    public static Element CreateXml(string xml) {
-        return new() { Type = ElementType.Xml, Xml = XmlElement.Create(xml) };
+    public Element SetDiceElement(DiceElement dice) {
+        Dice = dice;
+        return this;
     }
 
-    // public static Element CreateFile( ... ) {
-    //     return new() { Type = ElementType.File, File = ... };
-    // }
+    public Element SetRpsElement(RpsElement rps) {
+        Rps = rps;
+        return this;
+    }
 
-    // public static Element CreateMarkdown( ... ) {
-    //     return new() { Type = ElementType.Markdown, Markdown = ... };
-    // }
+    public Element SetPokeElement(PokeElement poke) {
+        Poke = poke;
+        return this;
+    }
 
-    // public static Element CreateKeyboard( ... ) {
-    //     return new() { Type = ElementType.Keyboard, Keyboard = ... };
-    // }
+    public Element SetMusicElement(MusicElement music) {
+        Music = music;
+        return this;
+    }
+
+    public Element SetWeatherElement(WeatherElement weather) {
+        Weather = weather;
+        return this;
+    }
+
+    public Element SetLocationElement(LocationElement location) {
+        Location = location;
+        return this;
+    }
+
+    public Element SetShareElement(ShareElement share) {
+        Share = share;
+        return this;
+    }
+
+    public Element SetGiftElement(GiftElement gift) {
+        Gift = gift;
+        return this;
+    }
+
+    public Element SetMarketFaceElement(MarketFaceElement marketFace) {
+        MarketFace = marketFace;
+        return this;
+    }
+
+    public Element SetForwardElement(ForwardElement forward) {
+        Forward = forward;
+        return this;
+    }
+
+    public Element SetContactElement(ContactElement contact) {
+        Contact = contact;
+        return this;
+    }
+
+    public Element SetJsonElement(JsonElement json) {
+        Json = json;
+        return this;
+    }
+
+    public Element SetXmlElement(XmlElement xml) {
+        Xml = xml;
+        return this;
+    }
+
+    public Element SetFileElement(FileElement file) {
+        File = file;
+        return this;
+    }
+
+    public Element SetMarkdownElement(MarkdownElement markdown) {
+        Markdown = markdown;
+        return this;
+    }
+
+    public Element SetKeyboardElement(KeyboardElement keyboard) {
+        Keyboard = keyboard;
+        return this;
+    }
 }

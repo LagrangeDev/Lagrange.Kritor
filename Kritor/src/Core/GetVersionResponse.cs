@@ -1,12 +1,13 @@
 namespace Kritor.Core;
 
 public partial class GetVersionResponse {
-    private GetVersionResponse(string version, string appName) {
+    public GetVersionResponse SetVersion(string version) {
         Version = version;
-        AppName = appName;
+        return this;
     }
 
-    public static GetVersionResponse Create(string version, string appName) {
-        return new(version, appName);
+    public GetVersionResponse SetAppName(string appName) {
+        AppName = appName;
+        return this;
     }
 }

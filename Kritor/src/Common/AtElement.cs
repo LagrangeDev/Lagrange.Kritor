@@ -1,7 +1,13 @@
 namespace Kritor.Common;
 
 public partial class AtElement {
-    public static AtElement Create(ulong uin) {
-        return new() { Uin = uin };
+    public AtElement SetUid(string uid) {
+        Uid = uid;
+        return this;
+    }
+
+    public AtElement SetUin(ulong uin) {
+        Uin = uin;
+        return this;
     }
 }
