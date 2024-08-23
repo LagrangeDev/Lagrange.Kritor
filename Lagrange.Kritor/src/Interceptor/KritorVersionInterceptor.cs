@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Lagrange.Core;
@@ -11,10 +12,14 @@ public class KritorVersionInterceptor(ILogger<KritorVersionInterceptor> logger, 
 
     private readonly string _uin = bot.BotUin.ToString();
 
+    private readonly string _version = Assembly.GetAssembly(typeof(Program))?
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "Unknown";
+
     public override Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request, ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation) {
         context.ResponseTrailers.Add("kritor-self-uin", _uin);
         context.ResponseTrailers.Add("kritor-self-uid", "");
-        context.ResponseTrailers.Add("kritor-self-version", "Lagrange.Kritor 0.0.0-alpha");
+        context.ResponseTrailers.Add("kritor-self-version", $"Lagrange.Kritor {_version}");
         return base.UnaryServerHandler(request, context, continuation);
     }
 }
