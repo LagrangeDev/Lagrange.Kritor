@@ -43,6 +43,8 @@ public class KritorEventService : EventServiceBase {
         bot.Invoker.OnGroupMuteEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
         bot.Invoker.OnGroupReactionEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
         // bot.Invoker.On // TODO: GroupTransferNotice
+        // bot.Invoker.On // TODO: FriendIncreasedNotice
+        // bot.Invoker.On // TODO: FriendDecreasedNotice
     }
 
     public override async Task RegisterActiveListener(RequestPushEvent request, IServerStreamWriter<EventStructure> responseStream, ServerCallContext context) {
