@@ -22,6 +22,9 @@ public class KritorEventService : EventServiceBase {
         // CoreEvent
 
         // MessageEvent
+        bot.Invoker.OnFriendMessageReceived += (_, @event) => {
+            OnKritorMessageEvent?.Invoke(EventConverter.ToPushMessageBody(@event));
+        };
         bot.Invoker.OnGroupMessageReceived += (_, @event) => {
             OnKritorMessageEvent?.Invoke(EventConverter.ToPushMessageBody(@event));
         };
