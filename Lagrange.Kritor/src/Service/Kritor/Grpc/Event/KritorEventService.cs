@@ -22,12 +22,27 @@ public class KritorEventService : EventServiceBase {
         // CoreEvent
 
         // MessageEvent
-        bot.Invoker.OnFriendMessageReceived += (_, @event) => {
-            OnKritorMessageEvent?.Invoke(EventConverter.ToPushMessageBody(@event));
-        };
-        bot.Invoker.OnGroupMessageReceived += (_, @event) => {
-            OnKritorMessageEvent?.Invoke(EventConverter.ToPushMessageBody(@event));
-        };
+        bot.Invoker.OnFriendMessageReceived += (_, @event) => OnKritorMessageEvent?.Invoke(@event.ToPushMessageBody());
+        bot.Invoker.OnGroupMessageReceived += (_, @event) => OnKritorMessageEvent?.Invoke(@event.ToPushMessageBody());
+
+        // NoticeEvent
+        bot.Invoker.OnFriendPokeEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnFriendRecallEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        // bot.Invoker.On // TODO: PrivateFileUploadedNotice
+        bot.Invoker.OnGroupPokeEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupRecallEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        // bot.Invoker.On // TODO: GroupFileUploadedNotice
+        // bot.Invoker.On // TODO: GroupCardChangedNotice
+        // bot.Invoker.On // TODO: GroupUniqueTitleChangedNotice
+        bot.Invoker.OnGroupEssenceEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupMemberIncreaseEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupMemberDecreaseEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupAdminChangedEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        // bot.Invoker.On // TODO: GroupSignInNotice
+        bot.Invoker.OnGroupMemberMuteEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupMuteEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        bot.Invoker.OnGroupReactionEvent += (_, @event) => OnKritorNoticeEvent?.Invoke(@event.ToNoticeEvent());
+        // bot.Invoker.On // TODO: GroupTransferNotice
     }
 
     public override async Task RegisterActiveListener(RequestPushEvent request, IServerStreamWriter<EventStructure> responseStream, ServerCallContext context) {

@@ -42,7 +42,7 @@ public static class MessageConverter {
             ForwardEntity forward => new Element()
                 .SetType(ElementType.Reply)
                 .SetReplyElement(new ReplyElement()
-                    .SetMessageId(MessageIdUtility.BuildMessageId(forward.Time, forward.MessageId, forward.Sequence))
+                    .SetMessageId(MessageIdUtility.BuildMessageId(forward.Time, forward.Sequence))
                 ),
             ImageEntity image => new Element()
                 .SetType(ElementType.Image)
