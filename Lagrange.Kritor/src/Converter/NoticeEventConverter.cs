@@ -1,5 +1,4 @@
 using System;
-using Kritor.Common;
 using Kritor.Event;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Kritor.Utility;
@@ -10,55 +9,7 @@ using static Kritor.Event.NoticeEvent.Types;
 
 namespace Lagrange.Kritor.Converter;
 
-public static class EventConverter {
-    public static EventStructure ToPushMessageBody(this FriendMessageEvent @event) {
-        long timestamp = new DateTimeOffset(@event.Chain.Time).ToUnixTimeSeconds();
-
-        string messageId = MessageIdUtility.BuildMessageId(timestamp, @event.Chain.Sequence);
-
-        string nick = @event.Chain.FriendInfo?.Nickname
-            ?? throw new Exception("FriendMessageEvent cannot retrieve FriendInfo.MemberName");
-
-        return new EventStructure()
-            .SetType(EventType.Message)
-            .SetMessage(new PushMessageBody()
-                .SetTime((ulong)timestamp)
-                .SetMessageId(messageId)
-                .SetMessageSeq(@event.Chain.Sequence)
-                .SetPrivate(new PrivateSender()
-                    .SetUin(@event.Chain.FriendUin)
-                    .SetNick(nick)
-                )
-                .AddElements(@event.Chain.ToElements())
-            );
-    }
-
-    public static EventStructure ToPushMessageBody(this GroupMessageEvent @event) {
-        long timestamp = new DateTimeOffset(@event.EventTime).ToUnixTimeSeconds();
-
-        string messageId = MessageIdUtility.BuildMessageId(timestamp, @event.Chain.Sequence);
-
-        string groupId = @event.Chain.GroupUin?.ToString()
-            ?? throw new Exception("GroupMessageEvent cannot retrieve GroupUin");
-
-        string nick = @event.Chain.GroupMemberInfo?.MemberName
-            ?? throw new Exception("GroupMessageEvent cannot retrieve GroupMemberInfo.MemberName");
-
-        return new EventStructure()
-            .SetType(EventType.Message)
-            .SetMessage(new PushMessageBody()
-                .SetTime((ulong)timestamp)
-                .SetMessageId(messageId)
-                .SetMessageSeq(@event.Chain.Sequence)
-                .SetGroup(new GroupSender()
-                    .SetGroupId(groupId)
-                    .SetUin(@event.Chain.TargetUin)
-                    .SetNick(nick)
-                )
-                .AddElements(@event.Chain.ToElements())
-            );
-    }
-
+public static class NoticeEventConverter {
     public static EventStructure ToNoticeEvent(this FriendPokeEvent @event) {
         return new EventStructure()
             .SetType(EventType.Notice)
@@ -85,7 +36,7 @@ public static class EventConverter {
                 .SetPrivateRecall(new PrivateRecallNotice()
                     .SetOperatorUin(@event.FriendUin)
                     .SetMessageId(MessageIdUtility.BuildMessageId(@event.Time, @event.Sequence))
-                // .SetTipText(@event.) // TODO: Lagrange Can But NotSupport
+                // .SetTipText(@event.) // TODO: Lagrange NotSupport
                 )
             );
     }
@@ -119,8 +70,8 @@ public static class EventConverter {
                     .SetGroupId(@event.GroupUin)
                     .SetOperatorUin(@event.OperatorUin)
                     .SetTargetUin(@event.AuthorUin)
-                    .SetMessageId(MessageIdUtility.BuildMessageId(@event.Time,@event.Sequence))
-                // .SetTipText(@event.) // TODO: Lagrange Can But NotSupport
+                    .SetMessageId(MessageIdUtility.BuildMessageId(@event.Time, @event.Sequence))
+                // .SetTipText(@event.) // TODO: Lagrange NotSupport
                 )
             );
     }
@@ -151,7 +102,7 @@ public static class EventConverter {
                 .SetNoticeId(Guid.NewGuid().ToString())
                 .SetGroupMemberIncrease(new GroupMemberIncreasedNotice()
                     .SetGroupId(@event.GroupUin)
-                    // .SetOperatorUin() // TODO: Lagrange Can But NotSupport
+                    // .SetOperatorUin() // TODO: Lagrange NotSupport
                     // .SetInvitorUin() // TODO: Kritor NotSupport
                     .SetTargetUin(@event.MemberUin)
                     .SetType(@event.Type switch {

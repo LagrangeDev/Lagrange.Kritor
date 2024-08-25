@@ -56,8 +56,8 @@ public static class MessageConverter {
                 .SetType(ElementType.Voice)
                 .SetVoiceElement(new VoiceElement()
                     .SetFileUrl(record.AudioUrl)
-                // .SetFileMd5(record.AudioHash) // TODO: Lagrange Can But NotSupport
-                // .SetMagic(record.IsMagic) // TODO: Lagrange Can But NotSupport
+                // .SetFileMd5(record.AudioHash) // TODO: Lagrange NotSupport
+                // .SetMagic(record.IsMagic) // TODO: Lagrange NotSupport
                 ),
             VideoEntity video => new Element()
                 .SetType(ElementType.Video)
@@ -67,7 +67,7 @@ public static class MessageConverter {
                 ),
             PokeEntity poke => new Element()
                 .SetType(ElementType.Poke)
-                .SetPokeElement(new PokeElement() // TODO: Lagrange Can But NotSupport Id 23 Poke
+                .SetPokeElement(new PokeElement() // TODO: Lagrange NotSupport Id 23 Poke
                     .SetId(1)
                     .SetPokeType(0)
                     .SetStrength(poke.Strength)
