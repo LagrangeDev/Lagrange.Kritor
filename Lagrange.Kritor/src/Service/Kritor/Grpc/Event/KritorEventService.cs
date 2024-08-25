@@ -5,6 +5,7 @@ using Grpc.Core;
 using Kritor.Event;
 using Lagrange.Core;
 using Lagrange.Kritor.Converter;
+using Microsoft.Extensions.Hosting;
 using static Kritor.Event.EventService;
 
 namespace Lagrange.Kritor.Service.Kritor.Grpc.Event;
@@ -18,7 +19,11 @@ public class KritorEventService : EventServiceBase {
 
     public event Func<EventStructure, Task>? OnKritorRequestEvent;
 
-    public KritorEventService(BotContext bot) {
+    public readonly CancellationToken _ct;
+
+    public KritorEventService(BotContext bot, IHostApplicationLifetime lifetime) {
+        _ct = lifetime.ApplicationStopping;
+
         // CoreEvent
 
         // MessageEvent
@@ -63,7 +68,7 @@ public class KritorEventService : EventServiceBase {
             case EventType.Request: { OnKritorRequestEvent += handler; break; }
         };
 
-        context.CancellationToken.Register(tcs.SetResult);
+        CancellationTokenSource.CreateLinkedTokenSource(_ct, context.CancellationToken).Token.Register(tcs.SetResult);
         try {
             await tcs.Task;
         } catch (Exception e) {

@@ -28,7 +28,7 @@ public static class RequestEventConverter {
                 .SetGroupApply(new GroupApplyRequest()
                     .SetGroupId(@event.GroupUin)
                     .SetApplierUin(@event.TargetUin)
-                    // .SetInviterUin(@event.) // TODO: Lagrange NotSupport // TODO: optional
+                    // .SetInviterUin(@event.) // TODO: Lagrange NotSupport
                     // .SetReason(@event.) // TODO: Lagrange NotSupport
                 )
             );
