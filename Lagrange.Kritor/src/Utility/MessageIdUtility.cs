@@ -3,15 +3,19 @@ using System;
 namespace Lagrange.Kritor.Utility;
 
 public static class MessageIdUtility {
-    public static string BuildMessageId(long time, uint sequence) {
-        return $"{time:D32}_{sequence:D10}_____Lagrange.Kritor_";
+    public static string BuildGroupMessageId(ulong groupUin, ulong sequence) {
+        return $"g{groupUin:D20}{0:D20}{sequence:D20}";
     }
 
-    public static string BuildMessageId(DateTimeOffset time, uint sequence) {
-        return BuildMessageId(time.ToUnixTimeSeconds(), sequence);
+    public static string BuildPrivateMessageId(ulong uin, long time) {
+        return $"p{uin:D20}{time:D20}{0:D20}";
     }
 
-    public static string BuildMessageId(DateTime time, uint sequence) {
-        return BuildMessageId(new DateTimeOffset(time).ToUnixTimeSeconds(), sequence);
+    public static string BuildPrivateMessageId(ulong uin, DateTimeOffset time) {
+        return BuildPrivateMessageId(uin, time.ToUnixTimeSeconds());
+    }
+
+    public static string BuildPrivateMessageId(ulong uin, DateTime time) {
+        return BuildPrivateMessageId(uin, new DateTimeOffset(time));
     }
 }

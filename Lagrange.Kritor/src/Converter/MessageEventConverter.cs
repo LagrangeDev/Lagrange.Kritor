@@ -14,7 +14,7 @@ public static class MessageEventConverter {
     public static EventStructure ToPushMessageBody(this FriendMessageEvent @event) {
         long timestamp = new DateTimeOffset(@event.Chain.Time).ToUnixTimeSeconds();
 
-        string messageId = MessageIdUtility.BuildMessageId(timestamp, @event.Chain.Sequence);
+        string messageId = MessageIdUtility.BuildPrivateMessageId((ulong)timestamp, @event.Chain.Sequence);
 
         string nick = @event.Chain.FriendInfo?.Nickname
             ?? throw new Exception("FriendMessageEvent cannot retrieve FriendInfo.MemberName");
@@ -36,7 +36,10 @@ public static class MessageEventConverter {
     public static EventStructure ToPushMessageBody(this GroupMessageEvent @event) {
         long timestamp = new DateTimeOffset(@event.EventTime).ToUnixTimeSeconds();
 
-        string messageId = MessageIdUtility.BuildMessageId(timestamp, @event.Chain.Sequence);
+        string messageId = MessageIdUtility.BuildGroupMessageId(
+            @event.Chain.GroupUin ?? throw new Exception("GroupMessageEvent cannot retrieve GroupUin"), 
+            @event.Chain.Sequence
+        );
 
         string groupId = @event.Chain.GroupUin?.ToString()
             ?? throw new Exception("GroupMessageEvent cannot retrieve GroupUin");

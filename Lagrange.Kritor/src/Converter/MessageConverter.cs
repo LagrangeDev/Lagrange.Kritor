@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml;
@@ -7,6 +8,7 @@ using Lagrange.Core.Message.Entity;
 using Lagrange.Kritor.Utility;
 using static Kritor.Common.Element.Types;
 using static Kritor.Common.ImageElement.Types;
+using static Lagrange.Core.Message.MessageChain;
 using CoreXmlEntity = Lagrange.Core.Message.Entity.XmlEntity;
 using KritorXmlElement = Kritor.Common.XmlElement;
 
@@ -15,13 +17,13 @@ namespace Lagrange.Kritor.Converter;
 public static class MessageConverter {
     public static Element[] ToElements(this MessageChain chain) {
         return chain
-            .Select((entity) => entity.ToElement())
+            .Select((entity) => entity.ToElement(chain))
             .Where((element) => element != null)
             .Select((element) => element!)
             .ToArray();
     }
 
-    public static Element? ToElement(this IMessageEntity entity) {
+    public static Element? ToElement(this IMessageEntity entity, MessageChain chain) {
         return entity switch {
             TextEntity text => new Element()
                 .SetType(ElementType.Text)
@@ -42,21 +44,31 @@ public static class MessageConverter {
             ForwardEntity forward => new Element()
                 .SetType(ElementType.Reply)
                 .SetReplyElement(new ReplyElement()
-                    .SetMessageId(MessageIdUtility.BuildMessageId(forward.Time, forward.Sequence))
+                    .SetMessageId(chain.Type switch {
+                        MessageType.Group => MessageIdUtility.BuildGroupMessageId(
+                            chain.GroupUin ?? throw new Exception("MessageChain cannot retrieve GroupUin"),
+                            forward.Sequence
+                        ),
+                        MessageType.Temp or MessageType.Friend => MessageIdUtility.BuildPrivateMessageId(
+                            forward.TargetUin,
+                            forward.Time
+                        ),
+                        MessageType type => throw new Exception($"Unknown MessageChain Type: {type}")
+                    })
                 ),
             ImageEntity image => new Element()
                 .SetType(ElementType.Image)
                 .SetImageElement(new ImageElement()
                     .SetFileUrl(image.ImageUrl)
-                    // .SetFileMd5(image.ImageHash) // TODO: Lagrange NotSupport
-                    // .SetSubType(image.SubType) // TODO: Lagrange IneternalValue
+                    // .SetFileMd5(image.ImageHash) // WaitToReview: Lagrange NotSupport
+                    // .SetSubType(image.SubType) // WaitToReview: Lagrange IneternalValue
                     .SetFileType(ImageType.Common)
                 ),
             RecordEntity record => new Element()
                 .SetType(ElementType.Voice)
                 .SetVoiceElement(new VoiceElement()
                     .SetFileUrl(record.AudioUrl)
-                // .SetFileMd5(record.AudioHash) // TODO: Lagrange NotSupport
+                // .SetFileMd5(record.AudioHash) // WaitToReview: Lagrange NotSupport
                 // .SetMagic(record.IsMagic) // TODO: Lagrange NotSupport
                 ),
             VideoEntity video => new Element()

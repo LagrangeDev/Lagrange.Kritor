@@ -35,8 +35,8 @@ public static class NoticeEventConverter {
                 .SetNoticeId(Guid.NewGuid().ToString())
                 .SetPrivateRecall(new PrivateRecallNotice()
                     .SetOperatorUin(@event.FriendUin)
-                    .SetMessageId(MessageIdUtility.BuildMessageId(@event.Time, @event.Sequence))
-                // .SetTipText(@event.) // TODO: Lagrange NotSupport
+                    .SetMessageId(MessageIdUtility.BuildPrivateMessageId(@event.FriendUin, @event.Time))
+                // .SetTipText(@event.) // WaitToReview: Lagrange NotSupport
                 )
             );
     }
@@ -70,8 +70,8 @@ public static class NoticeEventConverter {
                     .SetGroupId(@event.GroupUin)
                     .SetOperatorUin(@event.OperatorUin)
                     .SetTargetUin(@event.AuthorUin)
-                    .SetMessageId(MessageIdUtility.BuildMessageId(@event.Time, @event.Sequence))
-                // .SetTipText(@event.) // TODO: Lagrange NotSupport
+                    .SetMessageId(MessageIdUtility.BuildGroupMessageId(@event.GroupUin, @event.Sequence))
+                // .SetTipText(@event.) // WaitToReview: Lagrange NotSupport
                 )
             );
     }
@@ -87,7 +87,7 @@ public static class NoticeEventConverter {
                     .SetGroupId(@event.GroupUin)
                     .SetOperatorUin(@event.OperatorUin)
                     .SetTargetUin(@event.FromUin)
-                    .SetMessageId(MessageIdUtility.BuildMessageId(0, @event.Sequence)) // TODO: Time
+                    .SetMessageId(MessageIdUtility.BuildGroupMessageId(@event.GroupUin, @event.Sequence))
                     .SetIsSet(@event.IsSet)
                 )
             );
@@ -196,7 +196,7 @@ public static class NoticeEventConverter {
                 .SetNoticeId(Guid.NewGuid().ToString())
                 .SetGroupReactMessageWithEmoji(new GroupReactMessageWithEmojiNotice()
                     .SetGroupId(@event.TargetGroupUin)
-                    .SetMessageId(MessageIdUtility.BuildMessageId(0, @event.TargetSequence)) // TODO: Time
+                    .SetMessageId(MessageIdUtility.BuildGroupMessageId(@event.TargetGroupUin, @event.TargetSequence))
                     .SetFaceId(uint.Parse(@event.Code))
                     .SetIsSet(@event.IsAdd)
                 )
