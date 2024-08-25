@@ -10,7 +10,7 @@ using static Kritor.Event.EventService;
 namespace Lagrange.Kritor.Service.Kritor.Grpc.Event;
 
 public class KritorEventService : EventServiceBase {
-    public event Func<EventStructure, Task>? OnKritorCoreEvent;
+    // public event Func<EventStructure, Task>? OnKritorCoreEvent; // NoEvent
 
     public event Func<EventStructure, Task>? OnKritorMessageEvent;
 
@@ -57,7 +57,7 @@ public class KritorEventService : EventServiceBase {
 
         Func<EventStructure, Task> handler = CreateKritorEventHandler(responseStream, tcs, context.CancellationToken);
         switch (request.Type) {
-            case EventType.CoreEvent: { OnKritorCoreEvent += handler; break; }
+            // case EventType.CoreEvent: { OnKritorCoreEvent += handler; break; }
             case EventType.Message: { OnKritorMessageEvent += handler; break; }
             case EventType.Notice: { OnKritorNoticeEvent += handler; break; }
             case EventType.Request: { OnKritorRequestEvent += handler; break; }
@@ -70,7 +70,7 @@ public class KritorEventService : EventServiceBase {
             Console.WriteLine(e);
         } finally {
             switch (request.Type) {
-                case EventType.CoreEvent: { OnKritorCoreEvent -= handler; break; }
+                // case EventType.CoreEvent: { OnKritorCoreEvent -= handler; break; }
                 case EventType.Message: { OnKritorMessageEvent -= handler; break; }
                 case EventType.Notice: { OnKritorNoticeEvent -= handler; break; }
                 case EventType.Request: { OnKritorRequestEvent -= handler; break; }

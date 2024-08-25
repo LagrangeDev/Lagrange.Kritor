@@ -22,7 +22,7 @@ public class KritorCoreService(BotContext bot) : CoreServiceBase {
     public override Task<GetCurrentAccountResponse> GetCurrentAccount(GetCurrentAccountRequest request, ServerCallContext context) {
         return Task.FromResult(new GetCurrentAccountResponse()
             .SetAccountUin(bot.BotUin.ToString())
-            .SetAccountName(bot.BotName ?? "")
+            .SetAccountName(bot.BotName ?? throw new RpcException(new(StatusCode.Unknown, "Unable to retrieve `BotName`")))
         );
     }
 }
