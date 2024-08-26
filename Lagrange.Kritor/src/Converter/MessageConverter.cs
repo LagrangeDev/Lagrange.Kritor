@@ -61,7 +61,7 @@ public static class MessageConverter {
                 .SetImageElement(new ImageElement()
                     .SetFileUrl(image.ImageUrl)
                     // .SetFileMd5(image.ImageHash) // WaitToReview: Lagrange NotSupport
-                    // .SetSubType(image.SubType) // WaitToReview: Lagrange IneternalValue
+                    .SetSubType((uint)image.SubType)
                     .SetFileType(ImageType.Common)
                 ),
             RecordEntity record => new Element()
