@@ -48,9 +48,8 @@ public class GroupFileService(BotContext bot) : GroupFileServiceBase {
     // }
 
     public override async Task<DeleteFileResponse> DeleteFile(DeleteFileRequest request, ServerCallContext context) {
-        if (await _bot.GroupFSDelete((uint)request.GroupId, request.FileId)) {
-            throw new RpcException(new(StatusCode.Unknown, "Unknown"));
-        }
+        (int retCode, string retMsg) = await _bot.GroupFSDelete((uint)request.GroupId, request.FileId);
+        if (retCode != 0) throw new RpcException(new(StatusCode.Unknown, retMsg));
         return new();
     }
 

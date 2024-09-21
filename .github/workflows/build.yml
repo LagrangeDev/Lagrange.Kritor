@@ -1,0 +1,28 @@
+﻿name: Lagrange.Kritor Build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build Lagrange.Kritor .NET 8.0
+        run: dotnet publish Lagrange.Kritor/Lagrange.Kritor.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=win-x64 --framework net8.0
+      - name: Upload binary files win-x64 for .NET 8.0
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagrange.Kritor_win-x64_net8.0_NoSelfContained
+          path: Lagrange.Kritor/bin/Release/net8.0/win-x64/publish
