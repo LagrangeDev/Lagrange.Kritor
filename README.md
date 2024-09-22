@@ -21,8 +21,8 @@ git submodule update --remote
         "Protocol": {
             "Platform": "Linux",
             "Signer":{
-                "Url": "",
-                "Proxy": "http://127.0.0.1:9090"
+                "Url": "https://sign.lagrangecore.org/api/sign/25765",
+                "Proxy": ""
             }
         },
         "Server": {
