@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml;
+using Google.Protobuf.Collections;
 using Kritor.Common;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Kritor.Utilities;
+using CoreAction = Lagrange.Core.Message.Entity.Action;
+using CoreButton = Lagrange.Core.Message.Entity.Button;
 using CoreXmlEntity = Lagrange.Core.Message.Entity.XmlEntity;
 using KritorXmlElement = Kritor.Common.XmlElement;
 
@@ -151,5 +154,161 @@ public static class MessageConverter {
             }
         };
         return true;
+    }
+
+    public static MessageChain ToGroupChain(this RepeatedField<Element> elements, uint groupUin) {
+        return elements.Aggregate(
+            MessageBuilder.Group(groupUin),
+            (builder, element) => builder.AddElement(element),
+            (builder) => builder.Build()
+        );
+    }
+
+    public static MessageChain ToFriendChain(this RepeatedField<Element> elements, uint userUin) {
+        return elements.Aggregate(
+            MessageBuilder.Friend(userUin),
+            (builder, element) => builder.AddElement(element),
+            (builder) => builder.Build()
+        );
+    }
+
+    public static MessageBuilder AddElement(this MessageBuilder builder, Element element) {
+        return element.Type switch {
+            Element.Types.ElementType.Unspecified => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Unspecified})"
+            ),
+            Element.Types.ElementType.Text => builder.Text(element.Text.Text),
+            Element.Types.ElementType.At => builder.Mention(
+                element.At.HasUin ? (uint)element.At.Uin : throw new Exception("Not support uin is null")
+            ),
+            Element.Types.ElementType.Face => builder.Face(
+                (ushort)element.Face.Id,
+                element.Face.HasIsBig && element.Face.IsBig
+            ),
+            Element.Types.ElementType.BubbleFace => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.BubbleFace})"
+            ),
+            Element.Types.ElementType.Reply => builder.Add(new ForwardEntity {
+                Time = DateTimeOffset.Now.DateTime,
+                Sequence = MessageIdUtility.GetSequence(element.Reply.MessageId),
+                ClientSequence = 0, // Private reply need
+                TargetUin = 1 // Tail at
+            }),
+            Element.Types.ElementType.Image => element.Image.DataCase switch {
+                ImageElement.DataOneofCase.None => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({ImageElement.DataOneofCase.None})"
+                ),
+                ImageElement.DataOneofCase.File => builder.Image([.. element.Image.File]),
+                ImageElement.DataOneofCase.FileName => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({ImageElement.DataOneofCase.FileName})"
+                ),
+                ImageElement.DataOneofCase.FilePath => builder.Image(element.Image.FilePath),
+                ImageElement.DataOneofCase.FileUrl => builder.Image(HttpClientUtility.GetBytes(element.Image.FileUrl)),
+                ImageElement.DataOneofCase unknown => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({unknown})"
+                ),
+            },
+            Element.Types.ElementType.Voice => element.Voice.DataCase switch {
+                VoiceElement.DataOneofCase.None => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({VoiceElement.DataOneofCase.None})"
+                ),
+                VoiceElement.DataOneofCase.File => builder.Record([.. element.Voice.File]),
+                VoiceElement.DataOneofCase.FileName => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({VoiceElement.DataOneofCase.FileName})"
+                ),
+                VoiceElement.DataOneofCase.FilePath => builder.Record(element.Voice.FilePath),
+                VoiceElement.DataOneofCase.FileUrl => builder.Record(HttpClientUtility.GetBytes(element.Voice.FileUrl)),
+                VoiceElement.DataOneofCase unknown => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({unknown})"
+                ),
+            },
+            Element.Types.ElementType.Video => element.Video.DataCase switch {
+                VideoElement.DataOneofCase.None => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({VideoElement.DataOneofCase.None})"
+                ),
+                VideoElement.DataOneofCase.File => builder.Video([.. element.Video.File]),
+                VideoElement.DataOneofCase.FileName => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({VideoElement.DataOneofCase.FileName})"
+                ),
+                VideoElement.DataOneofCase.FilePath => builder.Video(element.Video.FilePath),
+                VideoElement.DataOneofCase.FileUrl => builder.Video(HttpClientUtility.GetBytes(element.Video.FileUrl)),
+                VideoElement.DataOneofCase unknown => throw new NotSupportedException(
+                    $"Not supported DataOneofCase({unknown})"
+                ),
+            },
+            Element.Types.ElementType.Basketball => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Basketball})"
+            ),
+            Element.Types.ElementType.Dice => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Dice})"
+            ),
+            Element.Types.ElementType.Rps => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Rps})"
+            ),
+            Element.Types.ElementType.Poke => builder.Poke(element.Poke.Id, element.Poke.Strength),
+            Element.Types.ElementType.Music => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Music})"
+            ), // TODO
+            Element.Types.ElementType.Weather => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Weather})"
+            ),
+            Element.Types.ElementType.Location => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Location})"
+            ),
+            Element.Types.ElementType.Share => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Share})"
+            ),
+            Element.Types.ElementType.Gift => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Gift})"
+            ),
+            Element.Types.ElementType.MarketFace => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.MarketFace})"
+            ), // Kritor miss arg
+            Element.Types.ElementType.Forward => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Forward})"
+            ), // TODO
+            Element.Types.ElementType.Contact => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Contact})"
+            ),
+            Element.Types.ElementType.Json => builder.Add(new JsonEntity(element.Json.Json)),
+            Element.Types.ElementType.Xml => builder.Add(new CoreXmlEntity(element.Xml.Xml)),
+            Element.Types.ElementType.File => throw new NotSupportedException(
+                $"Not supported ElementType({Element.Types.ElementType.Contact})"
+            ), // Please use file related APIs
+            Element.Types.ElementType.Markdown => builder.Markdown(new MarkdownData {
+                Content = element.Markdown.Markdown
+            }),
+            Element.Types.ElementType.Keyboard => builder.Keyboard(new KeyboardData {
+                Rows = element.Keyboard.Rows
+                    .Select(row => new Row {
+                        Buttons = row.Buttons
+                            .Select(button => new CoreButton {
+                                Id = button.Id,
+                                RenderData = new RenderData {
+                                    Label = button.RenderData.Label,
+                                    VisitedLabel = button.RenderData.VisitedLabel,
+                                    Style = button.RenderData.Style
+                                },
+                                Action = new CoreAction {
+                                    Type = button.Action.Type,
+                                    Permission = new Permission {
+                                        Type = button.Action.Permission.Type,
+                                        SpecifyRoleIds = button.Action.Permission.RoleIds.ToList(),
+                                        SpecifyUserIds = button.Action.Permission.UserIds.ToList(),
+                                    },
+                                    UnsupportTips = button.Action.UnsupportedTips,
+                                    Data = button.Action.Data,
+                                    Reply = button.Action.Reply,
+                                    Enter = button.Action.Enter
+                                }
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            }),
+            Element.Types.ElementType unknown => throw new NotSupportedException(
+                $"Not supported ElementType({unknown})"
+            )
+        };
     }
 }

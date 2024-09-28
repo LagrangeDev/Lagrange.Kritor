@@ -12,13 +12,13 @@ using static Kritor.Event.EventService;
 namespace Lagrange.Kritor.Services.Kritor.Grpc.Event;
 
 public class KritorEventService : EventServiceBase {
-    // public event Func<EventStructure, Task>? OnKritorCoreEvent; // NoEvent
+    // public event Action<EventStructure>? OnKritorCoreEvent; // NoEvent
 
-    public event Func<EventStructure, Task>? OnKritorMessageEvent;
+    public event Action<EventStructure>? OnKritorMessageEvent;
 
-    public event Func<EventStructure, Task>? OnKritorNoticeEvent;
+    public event Action<EventStructure>? OnKritorNoticeEvent;
 
-    public event Func<EventStructure, Task>? OnKritorRequestEvent;
+    public event Action<EventStructure>? OnKritorRequestEvent;
 
     public readonly CancellationToken _ct;
 
@@ -58,7 +58,7 @@ public class KritorEventService : EventServiceBase {
         bot.Invoker.OnGroupInvitationRequestEvent += (_, e) => OnKritorRequestEvent?.Invoke(e.ToRequestEvent());
     }
 
-    private static Func<EventStructure, Task> CreateKritorEventHandler(IServerStreamWriter<EventStructure> stream, TaskCompletionSource tcs, CancellationToken token) {
+    private static Action<EventStructure> CreateKritorEventHandler(IServerStreamWriter<EventStructure> stream, TaskCompletionSource tcs, CancellationToken token) {
         return async (@event) => {
             try {
                 await stream.WriteAsync(@event, token);
@@ -71,7 +71,7 @@ public class KritorEventService : EventServiceBase {
     public override async Task RegisterActiveListener(RequestPushEvent request, IServerStreamWriter<EventStructure> responseStream, ServerCallContext context) {
         TaskCompletionSource tcs = new();
 
-        Func<EventStructure, Task> handler = CreateKritorEventHandler(responseStream, tcs, context.CancellationToken);
+        Action<EventStructure> handler = CreateKritorEventHandler(responseStream, tcs, context.CancellationToken);
         switch (request.Type) {
             // case EventType.CoreEvent: { OnKritorCoreEvent += handler; break; }
             case EventType.Message: { OnKritorMessageEvent += handler; break; }

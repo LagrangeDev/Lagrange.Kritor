@@ -14,7 +14,7 @@ using KritorFile = Kritor.File.File;
 
 namespace Lagrange.Kritor.Services.Kritor.Grpc.File;
 
-public class GroupFileService(BotContext bot) : GroupFileServiceBase {
+public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     private readonly BotContext _bot = bot;
 
     public override Task<CreateFolderResponse> CreateFolder(CreateFolderRequest request, ServerCallContext context) {
@@ -48,7 +48,7 @@ public class GroupFileService(BotContext bot) : GroupFileServiceBase {
             ),
             UploadFileRequest.DataOneofCase.FilePath => new FileEntity(request.FilePath),
             UploadFileRequest.DataOneofCase.FileUrl => new FileEntity(
-                await HttpClientUtility.GetBytes(request.FileUrl),
+                await HttpClientUtility.GetBytesAsync(request.FileUrl, context.CancellationToken),
                 "Lagrange.Kritor Upload File"
             ),
             UploadFileRequest.DataOneofCase unknown => throw new NotSupportedException(
@@ -71,10 +71,13 @@ public class GroupFileService(BotContext bot) : GroupFileServiceBase {
     }
 
     public override async Task<GetFileSystemInfoResponse> GetFileSystemInfo(GetFileSystemInfoRequest request, ServerCallContext context) {
+        uint count = await _bot.FetchGroupFSCount((uint)request.GroupId);
+        uint space = (uint)await _bot.FetchGroupFSSpace((uint)request.GroupId);
+        
         return new GetFileSystemInfoResponse {
-            FileCount = await _bot.FetchGroupFSCount((uint)request.GroupId),
+            FileCount = count,
             // TotalCount =
-            UsedSpace = (uint)await _bot.FetchGroupFSSpace((uint)request.GroupId),
+            UsedSpace = space,
             // TotalCount =
         };
     }
