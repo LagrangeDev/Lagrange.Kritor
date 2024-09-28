@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Net;
@@ -8,21 +7,21 @@ using Lagrange.Core;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
-using Lagrange.Kritor.Provider;
-using Lagrange.Kritor.Service.Lagrange.Core;
-using Lagrange.Kritor.Service.Kritor.Grpc.Authentication;
+using Lagrange.Kritor.Providers;
+using Lagrange.Kritor.Services.Lagrange.Core;
+using Lagrange.Kritor.Services.Kritor.Grpc.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Lagrange.Kritor.Utility;
 using Microsoft.Extensions.Logging;
 using System.Linq;
-using Lagrange.Kritor.Interceptor;
-using Lagrange.Kritor.Service.Kritor.Grpc.Core;
-using Lagrange.Kritor.Service.Kritor.Grpc.Event;
+using Lagrange.Kritor.Interceptors;
+using Lagrange.Kritor.Services.Kritor.Grpc.Core;
+using Lagrange.Kritor.Services.Kritor.Grpc.Event;
 using System.Reflection;
+using Lagrange.Kritor.Authenticates;
 
 namespace Lagrange.Kritor;
 internal class Program {
@@ -43,11 +42,11 @@ internal class Program {
                 .GetRequiredSection("Network");
 
             if (!IPAddress.TryParse(kritorSection.GetRequiredSection("Address").Get<string>(), out IPAddress? address)) {
-                throw new Exception("Kritor.Address must not be null and can be resolved to IPAddress");
+                throw new Exception("Kritor.Network.Address must not be null and can be resolved to IPAddress");
             }
 
             int port = kritorSection.GetRequiredSection("Port").Get<int>();
-            if (port is < 1 or > 65535) throw new Exception("Kritor.Port must not be null and be in the range 1-65535");
+            if (port < 1 || port > 65535) throw new Exception("Kritor.Port must not be null and be in the range 1-65535");
 
             sOptions.Listen(address, port, (lOptions) => lOptions.Protocols = HttpProtocols.Http2);
         });
@@ -146,17 +145,21 @@ internal class Program {
         bool enabled = config.GetRequiredSection("Enabled").Get<bool>();
 
         return new(
-            logger,
             enabled,
             enabled
                 ? config.GetRequiredSection("SuperTicket").Get<string>()
-                    ?? throw new Exception("When Enabled is true, SuperTicket cannot be null")
+                    ?? throw new Exception(
+                        "When Kritor.Authentication.Enabled is true, Kritor.Authentication.SuperTicket cannot be null"
+                    )
                 : "",
             bot.BotUin.ToString(),
             enabled
                 ? config.GetRequiredSection("Tickets").GetChildren()
                     .Select((tickets) => {
-                        return tickets.Get<string>() ?? throw new Exception("When Enabled is true, Tickets cannot be null");
+                        return tickets.Get<string>()
+                            ?? throw new Exception(
+                                "When Kritor.Authentication.Enabled is true, Kritor.Authentication.Tickets cannot be null"
+                            );
                     }).ToArray()
                 : []
         );
