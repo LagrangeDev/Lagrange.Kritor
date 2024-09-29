@@ -73,7 +73,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     public override async Task<GetFileSystemInfoResponse> GetFileSystemInfo(GetFileSystemInfoRequest request, ServerCallContext context) {
         uint count = await _bot.FetchGroupFSCount((uint)request.GroupId);
         uint space = (uint)await _bot.FetchGroupFSSpace((uint)request.GroupId);
-        
+
         return new GetFileSystemInfoResponse {
             FileCount = count,
             // TotalCount =
@@ -88,36 +88,35 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
             request.HasFolderId ? request.FolderId : "/"
         );
 
+        IEnumerable<KritorFile> files = entries.OfType<BotFileEntry>()
+            .Select((entry) => new KritorFile {
+                FileId = entry.FileId,
+                FileName = entry.FileName,
+                FileSize = entry.FileSize,
+                // BusId =
+                UploadTime = (ulong)new DateTimeOffset(entry.UploadedTime).ToUnixTimeSeconds(),
+                ExpireTime = (ulong)new DateTimeOffset(entry.ExpireTime).ToUnixTimeSeconds(),
+                ModifyTime = (ulong)new DateTimeOffset(entry.ModifiedTime).ToUnixTimeSeconds(),
+                DownloadTimes = entry.DownloadedTimes,
+                Uploader = entry.UploaderUin,
+                // UploaderName =
+                // Sha =
+                // Sha3 =
+                // Md5 =
+            });
+
+        IEnumerable<Folder> folders = entries.OfType<BotFolderEntry>()
+            .Select((entry) => new Folder {
+                FolderId = entry.FolderId,
+                FolderName = entry.FolderName,
+                TotalFileCount = entry.TotalFileCount,
+                CreateTime = (ulong)new DateTimeOffset(entry.CreateTime).ToUnixTimeSeconds(),
+                Creator = entry.CreatorUin,
+                // CreatorName = entry.
+            });
         return new GetFileListResponse {
-            Files = {
-                entries.OfType<BotFileEntry>()
-                    .Select((entry) => new KritorFile {
-                        FileId = entry.FileId,
-                        FileName = entry.FileName,
-                        FileSize = entry.FileSize,
-                        // BusId =
-                        UploadTime = (ulong)new DateTimeOffset(entry.UploadedTime).ToUnixTimeSeconds(),
-                        ExpireTime = (ulong)new DateTimeOffset(entry.ExpireTime).ToUnixTimeSeconds(),
-                        ModifyTime = (ulong)new DateTimeOffset(entry.ModifiedTime).ToUnixTimeSeconds(),
-                        DownloadTimes = entry.DownloadedTimes,
-                        Uploader = entry.UploaderUin,
-                        // UploaderName =
-                        // Sha =
-                        // Sha3 =
-                        // Md5 =
-                    })
-            },
-            Folders = {
-                entries.OfType<BotFolderEntry>()
-                    .Select((entry) => new Folder {
-                        FolderId = entry.FolderId,
-                        FolderName = entry.FolderName,
-                        TotalFileCount = entry.TotalFileCount,
-                        CreateTime = (ulong)new DateTimeOffset(entry.CreateTime).ToUnixTimeSeconds(),
-                        Creator = entry.CreatorUin,
-                        // CreatorName = entry.
-                    })
-            }
+            Files = { files },
+            Folders = { folders }
         };
     }
 }

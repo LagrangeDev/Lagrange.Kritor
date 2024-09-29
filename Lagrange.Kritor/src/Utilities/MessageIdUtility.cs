@@ -1,3 +1,6 @@
+using System;
+using Lagrange.Core.Message;
+
 namespace Lagrange.Kritor.Utilities;
 
 public static class MessageIdUtility {
@@ -7,6 +10,19 @@ public static class MessageIdUtility {
 
     public static string BuildGroupMessageId(ulong uin, ulong sequence) {
         return $"g{uin:D20}{sequence:D20}";
+    }
+
+    public static string BuildMessageId(MessageChain chain) {
+        return chain.Type switch {
+            MessageChain.MessageType.Group => BuildGroupMessageId((ulong)chain.GroupUin!, chain.Sequence),
+            MessageChain.MessageType.Temp => throw new NotSupportedException(
+                $"Not supported MessageType({MessageChain.MessageType.Temp})"
+            ),
+            MessageChain.MessageType.Friend => BuildPrivateMessageId(chain.FriendUin, chain.Sequence),
+            MessageChain.MessageType unknown => throw new NotSupportedException(
+                $"Not supported MessageType({unknown})"
+            ),
+        };
     }
 
     public static bool IsGroup(string id) {

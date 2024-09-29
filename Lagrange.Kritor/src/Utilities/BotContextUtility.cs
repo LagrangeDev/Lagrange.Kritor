@@ -16,7 +16,7 @@ public static class BotContextUtility {
         List<MessageChain>? chains;
         if (MessageIdUtility.IsGroup(id)) {
             chains = await bot.GetGroupMessage(uin, sequence, sequence);
-        } else if (MessageIdUtility.IsGroup(id)) {
+        } else if (MessageIdUtility.IsPrivate(id)) {
             chains = await bot.GetC2cMessage(uin, sequence, sequence);
         } else throw new NotSupportedException($"Not supported message id({id})");
 
@@ -26,4 +26,9 @@ public static class BotContextUtility {
 
         return chains[0];
     }
+
+    // WAITMERGE: https://github.com/LagrangeDev/Lagrange.Core/pull/616
+    // public static async Task<List<MessageChain>> GetMessagesByResId(this BotContext bot, string id, CancellationToken token) {
+
+    // }
 }
