@@ -7,7 +7,6 @@ using Kritor.Friend;
 using Lagrange.Core;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface.Api;
-using Lagrange.Core.Message.Entity;
 using static Kritor.Friend.FriendService;
 
 namespace Lagrange.Kritor.Services.Kritor.Grpc.Friend;

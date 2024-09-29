@@ -35,10 +35,10 @@ public static class NoticeEventConverter {
             //         NoticeId = Guid.NewGuid().ToString(),
             //         PrivateRecall = new PrivateRecallNotice {
             //             OperatorUin = recall.FriendUin,
-            //             MessageId = MessageIdUtility.BuildPrivateMessageId(recall.FriendUin, recall.Sequence)
+            //             MessageId = MessageIdUtility.BuildPrivateMessageId(recall.FriendUin, recall.ClientSequence)
             //         }
             //     }
-            // }
+            // },
             GroupPokeEvent poke => new EventStructure {
                 Type = EventType.Notice,
                 Notice = new NoticeEvent {

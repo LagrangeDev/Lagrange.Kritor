@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using Google.Protobuf.Collections;
 using Kritor.Common;
+using Lagrange.Core;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Kritor.Utilities;
@@ -156,23 +159,23 @@ public static class MessageConverter {
         return true;
     }
 
-    public static MessageChain ToGroupChain(this RepeatedField<Element> elements, uint groupUin) {
-        return elements.Aggregate(
-            MessageBuilder.Group(groupUin),
-            (builder, element) => builder.AddElement(element),
-            (builder) => builder.Build()
-        );
+    public static async Task<MessageChain> ToGroupChainAsync(this RepeatedField<Element> elements, BotContext bot, uint groupUin, CancellationToken token) {
+        MessageBuilder builder = MessageBuilder.Group(groupUin);
+        foreach (Element element in elements) {
+            await builder.AddElementAsync(bot, element, token);
+        }
+        return builder.Build();
     }
 
-    public static MessageChain ToFriendChain(this RepeatedField<Element> elements, uint userUin) {
-        return elements.Aggregate(
-            MessageBuilder.Friend(userUin),
-            (builder, element) => builder.AddElement(element),
-            (builder) => builder.Build()
-        );
+    public static async Task<MessageChain> ToFriendChainAsync(this RepeatedField<Element> elements, BotContext bot, uint userUin, CancellationToken token) {
+        MessageBuilder builder = MessageBuilder.Friend(userUin);
+        foreach (Element element in elements) {
+            await builder.AddElementAsync(bot, element, token);
+        }
+        return builder.Build();
     }
 
-    public static MessageBuilder AddElement(this MessageBuilder builder, Element element) {
+    public static async Task<MessageBuilder> AddElementAsync(this MessageBuilder builder, BotContext bot, Element element, CancellationToken token) {
         return element.Type switch {
             Element.Types.ElementType.Unspecified => throw new NotSupportedException(
                 $"Not supported ElementType({Element.Types.ElementType.Unspecified})"
@@ -188,12 +191,7 @@ public static class MessageConverter {
             Element.Types.ElementType.BubbleFace => throw new NotSupportedException(
                 $"Not supported ElementType({Element.Types.ElementType.BubbleFace})"
             ),
-            Element.Types.ElementType.Reply => builder.Add(new ForwardEntity {
-                Time = DateTimeOffset.Now.DateTime,
-                Sequence = MessageIdUtility.GetSequence(element.Reply.MessageId),
-                ClientSequence = 0, // Private reply need
-                TargetUin = 1 // Tail at
-            }),
+            Element.Types.ElementType.Reply => builder.Forward(await bot.GetMessageByMessageIdAsync(element.Reply.MessageId, token)),
             Element.Types.ElementType.Image => element.Image.DataCase switch {
                 ImageElement.DataOneofCase.None => throw new NotSupportedException(
                     $"Not supported DataOneofCase({ImageElement.DataOneofCase.None})"
@@ -293,8 +291,8 @@ public static class MessageConverter {
                                     Type = button.Action.Type,
                                     Permission = new Permission {
                                         Type = button.Action.Permission.Type,
-                                        SpecifyRoleIds = button.Action.Permission.RoleIds.ToList(),
-                                        SpecifyUserIds = button.Action.Permission.UserIds.ToList(),
+                                        SpecifyRoleIds = [.. button.Action.Permission.RoleIds],
+                                        SpecifyUserIds = [.. button.Action.Permission.UserIds],
                                     },
                                     UnsupportTips = button.Action.UnsupportedTips,
                                     Data = button.Action.Data,
