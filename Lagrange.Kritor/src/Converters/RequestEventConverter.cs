@@ -42,7 +42,7 @@ public static class RequestEventConverter {
                     }
                 }
             },
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException($"Not supported Event({@event})"),
         };
     }
 }

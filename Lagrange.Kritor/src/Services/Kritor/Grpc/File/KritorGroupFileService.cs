@@ -32,7 +32,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     public override async Task<DeleteFolderResponse> DeleteFolder(DeleteFolderRequest request, ServerCallContext context) {
         (int retCode, string retMsg) = await _bot.GroupFSDeleteFolder((uint)request.GroupId, request.FolderId);
 
-        if (retCode != 0) throw new Exception($"({retCode}) {retMsg}");
+        if (retCode != 0) throw new Exception($"(Code {retCode}) {retMsg}");
 
         return new DeleteFolderResponse { };
     }
@@ -40,7 +40,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     public override async Task<UploadFileResponse> UploadFile(UploadFileRequest request, ServerCallContext context) {
         FileEntity entity = request.DataCase switch {
             UploadFileRequest.DataOneofCase.None => throw new NotSupportedException(
-                "Not supported DataOneofCase(None)"
+                $"Not supported UploadFileRequest.DataOneofCase({UploadFileRequest.DataOneofCase.None})"
             ),
             UploadFileRequest.DataOneofCase.File => new FileEntity([.. request.File], "Lagrange.Kritor Upload File"),
             UploadFileRequest.DataOneofCase.FileName => throw new NotImplementedException(
@@ -51,13 +51,11 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
                 await HttpClientUtility.GetBytesAsync(request.FileUrl, context.CancellationToken),
                 "Lagrange.Kritor Upload File"
             ),
-            UploadFileRequest.DataOneofCase unknown => throw new NotSupportedException(
-                $"Not supported DataOneofCase({unknown})"
-            ),
+            _ => throw new NotSupportedException($"Not supported UploadFileRequest.DataOneofCase({request.DataCase})"),
         };
 
 
-        if (!await _bot.GroupFSUpload((uint)request.GroupId, entity)) throw new Exception("Upload file failed");
+        if (!await _bot.GroupFSUpload((uint)request.GroupId, entity)) throw new Exception("Group fs upload failed");
 
         return new UploadFileResponse { };
     }
@@ -65,7 +63,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     public override async Task<DeleteFileResponse> DeleteFile(DeleteFileRequest request, ServerCallContext context) {
         (int retCode, string retMsg) = await _bot.GroupFSDelete((uint)request.GroupId, request.FileId);
 
-        if (retCode != 0) throw new Exception($"({retCode}) {retMsg}");
+        if (retCode != 0) throw new Exception($"(Code {retCode}) {retMsg}");
 
         return new();
     }

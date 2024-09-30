@@ -21,14 +21,9 @@ public static class BotContextUtility {
         } else throw new NotSupportedException($"Not supported message id({id})");
 
         if (chains == null || chains.Count != 1) {
-            throw new Exception($"Get message chain by message id({id}) failed");
+            throw new Exception($"Get group/c2c message failed");
         }
 
         return chains[0];
     }
-
-    // WAITMERGE: https://github.com/LagrangeDev/Lagrange.Core/pull/616
-    // public static async Task<List<MessageChain>> GetMessagesByResId(this BotContext bot, string id, CancellationToken token) {
-
-    // }
 }

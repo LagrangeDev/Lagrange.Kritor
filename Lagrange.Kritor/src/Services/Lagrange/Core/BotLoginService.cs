@@ -23,7 +23,7 @@ public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLi
         if (bot.UpdateKeystore().Session.TempPassword != null && await bot.LoginByPassword().WaitAsync(token)) return;
 
         // QRCode Login
-        (string url, _) = await bot.FetchQrCode().WaitAsync(token) ?? throw new Exception("Fetch QR code failed");
+        (string url, _) = await bot.FetchQrCode().WaitAsync(token) ?? throw new Exception("Fetch qr code failed");
         logger.LogQrCode(QRCodeUtility.BuildConsoleString(url));
 
         await bot.LoginByQrCode().WaitAsync(token);

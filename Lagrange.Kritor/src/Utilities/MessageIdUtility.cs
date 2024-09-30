@@ -19,9 +19,18 @@ public static class MessageIdUtility {
                 $"Not supported MessageType({MessageChain.MessageType.Temp})"
             ),
             MessageChain.MessageType.Friend => BuildPrivateMessageId(chain.FriendUin, chain.Sequence),
-            MessageChain.MessageType unknown => throw new NotSupportedException(
-                $"Not supported MessageType({unknown})"
+            _ => throw new NotSupportedException($"Not supported MessageChain.MessageType({chain.Type})"),
+        };
+    }
+
+    public static string BuildMessageId(MessageChain chain, MessageResult result) {
+        return chain.Type switch {
+            MessageChain.MessageType.Group => BuildGroupMessageId((ulong)chain.GroupUin!, (ulong)result.Sequence!),
+            MessageChain.MessageType.Temp => throw new NotSupportedException(
+                $"Not supported MessageType({MessageChain.MessageType.Temp})"
             ),
+            MessageChain.MessageType.Friend => BuildPrivateMessageId(chain.FriendUin, (ulong)result.Sequence!),
+            _ => throw new NotSupportedException($"Not supported MessageChain.MessageType({chain.Type})"),
         };
     }
 

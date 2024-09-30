@@ -32,7 +32,7 @@ public class BotLoggerService(ILogger<BotContext> logger, BotContext bot) : IHos
                 CoreLogLevel.Warning => MsLogLevel.Warning,
                 CoreLogLevel.Exception => MsLogLevel.Error,
                 CoreLogLevel.Fatal => MsLogLevel.Error,
-                CoreLogLevel level => throw new NotSupportedException($"Not supported LogLevel({level})"),
+                _ => throw new NotSupportedException($"Not supported LogLevel({@event.Level})"),
             },
             @event.ToString()
         );

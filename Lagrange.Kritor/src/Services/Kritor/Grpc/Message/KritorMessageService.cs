@@ -26,26 +26,56 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             Scene.Group => await request.Elements.ToGroupChainAsync(_bot, uin, context.CancellationToken),
             Scene.Friend => await request.Elements.ToFriendChainAsync(_bot, uin, context.CancellationToken),
             Scene.Guild => throw new NotSupportedException($"Not supported Scene({Scene.Guild})"),
-            Scene.StrangerFromGroup => throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"),
+            Scene.StrangerFromGroup => throw new NotSupportedException(
+                $"Not supported Scene({Scene.StrangerFromGroup})"
+            ),
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
-            Scene unknown => throw new NotSupportedException($"Not supported Scene({unknown})"),
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})"),
         };
 
         MessageResult result = await _bot.SendMessage(chain);
         if (result.Result != 0 || result.Sequence == null) {
-            throw new Exception($"({result.Result}) Send message failed");
+            throw new Exception($"(Code {result.Result}) Send message failed");
         }
 
         return new SendMessageResponse {
-            MessageId = MessageIdUtility.BuildGroupMessageId(uin, (ulong)result.Sequence),
+            MessageId = MessageIdUtility.BuildMessageId(chain, result),
             MessageTime = result.Timestamp
         };
     }
 
-    // WAITMERGE: https://github.com/LagrangeDev/Lagrange.Core/pull/616
-    public override Task<SendMessageByResIdResponse> SendMessageByResId(SendMessageByResIdRequest request, ServerCallContext context) {
-        return base.SendMessageByResId(request, context);
+    public override async Task<SendMessageByResIdResponse> SendMessageByResId(SendMessageByResIdRequest request, ServerCallContext context) {
+        (int code, List<MessageChain>? chains) = await _bot.GetMessagesByResId(request.ResId);
+
+        if (code != 0) throw new Exception($"(Code {code}) Get messages by res id failed");
+
+        if (chains == null) throw new Exception($"Get messages by res id result is null");
+
+        uint uin = uint.Parse(request.Contact.Peer);
+
+        MessageChain chain = request.Contact.Scene switch {
+            Scene.Unspecified => throw new NotSupportedException($"Not supported Scene({Scene.Unspecified})"),
+            Scene.Group => MessageBuilder.Group(uin).MultiMsg([.. chains]).Build(),
+            Scene.Friend => MessageBuilder.Friend(uin).MultiMsg([.. chains]).Build(),
+            Scene.Guild => throw new NotSupportedException($"Not supported Scene({Scene.Guild})"),
+            Scene.StrangerFromGroup => throw new NotSupportedException(
+                $"Not supported Scene({Scene.StrangerFromGroup})"
+            ),
+            Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
+            Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
+        };
+
+        MessageResult result = await _bot.SendMessage(chain);
+        if (result.Result != 0 || result.Sequence == null) {
+            throw new Exception($"(Code {result.Result}) Send message failed");
+        }
+
+        return new SendMessageByResIdResponse {
+            MessageId = MessageIdUtility.BuildMessageId(chain, result),
+            MessageTime = result.Timestamp
+        };
     }
 
     public override Task<SetMessageReadResponse> SetMessageReaded(SetMessageReadRequest request, ServerCallContext context) {
@@ -63,13 +93,15 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
                 await _bot.GetMessageByMessageIdAsync(request.MessageId, context.CancellationToken)
             ),
             Scene.Guild => throw new NotSupportedException($"Not supported Scene({Scene.Guild})"),
-            Scene.StrangerFromGroup => throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"),
+            Scene.StrangerFromGroup => throw new NotSupportedException(
+                $"Not supported Scene({Scene.StrangerFromGroup})"
+            ),
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
-            Scene unknown => throw new NotSupportedException($"Not supported Scene({unknown})")
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         };
 
-        if (!isSuccess) throw new Exception($"Recall message");
+        if (!isSuccess) throw new Exception($"Recall group/friend message failed");
 
         return new RecallMessageResponse { };
     }
@@ -90,7 +122,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             $"{request.FaceId}"
         );
 
-        if (!isSuccess) throw new Exception($"React message with emoji failed");
+        if (!isSuccess) throw new Exception($"Group set message reaction failed");
 
         return new ReactMessageWithEmojiResponse { };
     }
@@ -101,10 +133,12 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             case Scene.Group: { break; }
             case Scene.Friend: { break; }
             case Scene.Guild: { throw new NotSupportedException($"Not supported Scene({Scene.Guild})"); }
-            case Scene.StrangerFromGroup: { throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"); }
+            case Scene.StrangerFromGroup: {
+                throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})");
+            }
             case Scene.Nearby: { throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"); }
             case Scene.Stranger: { throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"); }
-            case Scene unknown: { throw new NotSupportedException($"Not supported Scene({unknown})"); }
+            default: { throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})"); }
         }
 
         MessageChain chain = await _bot.GetMessageByMessageIdAsync(request.MessageId, context.CancellationToken);
@@ -140,13 +174,15 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
                 (uint)request.MessageSeq
             ),
             Scene.Guild => throw new NotSupportedException($"Not supported Scene({Scene.Guild})"),
-            Scene.StrangerFromGroup => throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"),
+            Scene.StrangerFromGroup => throw new NotSupportedException(
+                $"Not supported Scene({Scene.StrangerFromGroup})"
+            ),
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
-            Scene unknown => throw new NotSupportedException($"Not supported Scene({unknown})")
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         };
 
-        if (chains == null || chains.Count == 0) throw new Exception($"Get message by seq failed");
+        if (chains == null || chains.Count == 0) throw new Exception($"Get group/c2c message failed");
 
         return new GetMessageBySeqResponse {
             Message = new PushMessageBody {
@@ -179,11 +215,13 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
                 MessageIdUtility.GetSequence(request.StartMessageId)
             ),
             Scene.Guild => throw new NotSupportedException($"Not supported Scene({Scene.Guild})"),
-            Scene.StrangerFromGroup => throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"),
+            Scene.StrangerFromGroup => throw new NotSupportedException(
+                $"Not supported Scene({Scene.StrangerFromGroup})"
+            ),
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
-            Scene unknown => throw new NotSupportedException($"Not supported Scene({unknown})")
-        } ?? throw new Exception($"Get history message failed");
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
+        } ?? throw new Exception($"Get group/c2c message failed");
 
         IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
             Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
@@ -221,8 +259,8 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             Scene.StrangerFromGroup => throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})"),
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
-            Scene unknown => throw new NotSupportedException($"Not supported Scene({unknown})")
-        } ?? throw new Exception($"Get history message by seq failed");
+            _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
+        } ?? throw new Exception($"Get group/c2c message failed");
 
         IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
             Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
@@ -246,9 +284,28 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
         return base.UploadForwardMessage(request, context);
     }
 
-    // WAITMERGE: https://github.com/LagrangeDev/Lagrange.Core/pull/616
-    public override Task<DownloadForwardMessageResponse> DownloadForwardMessage(DownloadForwardMessageRequest request, ServerCallContext context) {
-        return base.DownloadForwardMessage(request, context);
+    public override async Task<DownloadForwardMessageResponse> DownloadForwardMessage(DownloadForwardMessageRequest request, ServerCallContext context) {
+        (int code, List<MessageChain>? chains) = await _bot.GetMessagesByResId(request.ResId);
+
+        if (code != 0) throw new Exception($"(Code {code}) Get mmessages by res id failed");
+
+        if (chains == null) return new DownloadForwardMessageResponse { Messages = { } };
+
+        IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
+            Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
+            MessageId = MessageIdUtility.BuildMessageId(chain),
+            MessageSeq = chain.Sequence,
+            Private = new PrivateSender {
+                Uin = chain.FriendUin,
+                Nick = chain.FriendInfo?.Nickname
+                    ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
+            },
+            Elements = { chain.ToElements() }
+        });
+
+        return new DownloadForwardMessageResponse {
+            Messages = { messages }
+        };
     }
 
     // TODO: Need to look into it. (；′⌒`)

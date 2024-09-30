@@ -45,12 +45,13 @@ internal class Program {
                 .GetRequiredSection("Kritor")
                 .GetRequiredSection("Network");
 
-            if (!IPAddress.TryParse(kritorSection.GetRequiredSection("Address").Get<string>(), out IPAddress? address)) {
-                throw new Exception("Kritor.Network.Address must not be null and can be resolved to IPAddress");
+            string? addressString = kritorSection.GetRequiredSection("Address").Get<string>();
+            if (!IPAddress.TryParse(addressString, out IPAddress? address)) {
+                throw new Exception($"Unknown Address({addressString})");
             }
 
             int port = kritorSection.GetRequiredSection("Port").Get<int>();
-            if (port < 1 || port > 65535) throw new Exception("Kritor.Port must not be null and be in the range 1-65535");
+            if (port < 1 || port > 65535) throw new Exception($"Port({port}) out of range(1 - 65565)");
 
             sOptions.Listen(address, port, (lOptions) => lOptions.Protocols = HttpProtocols.Http2);
         });
@@ -103,7 +104,7 @@ internal class Program {
                 "Windows" => Protocols.Windows,
                 "MacOs" => Protocols.MacOs,
                 "Linux" or null => Protocols.Linux,
-                string protocol => throw new Exception($"Unknown Core.Protocol.Platform: {protocol}")
+                string protocol => throw new NotSupportedException($"Not supported Core.Protocol.Server.Platform({protocol})")
             },
             AutoReconnect = serverConfig.GetSection("AutoReconnect").Get<bool>(),
             GetOptimumServer = serverConfig.GetSection("GetOptimumServer").Get<bool>(),

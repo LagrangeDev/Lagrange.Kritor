@@ -16,11 +16,11 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<BanMemberResponse> BanMember(BanMemberRequest request, ServerCallContext context) {
         if (request.TargetCase != BanMemberRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException($"Not supported BanMemberRequest.TargetOneofCase({request.TargetCase})");
         }
 
         if (!await _bot.MuteGroupMember((uint)request.GroupId, (uint)request.TargetUin, request.Duration)) {
-            throw new Exception($"Ban member failed");
+            throw new Exception($"mute group failed");
         }
 
         return new BanMemberResponse { };
@@ -28,11 +28,11 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<PokeMemberResponse> PokeMember(PokeMemberRequest request, ServerCallContext context) {
         if (request.TargetCase != PokeMemberRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException($"Not supported PokeMemberRequest.TargetOneofCase({request.TargetCase})");
         }
 
         if (!await _bot.GroupPoke((uint)request.GroupId, (uint)request.TargetUin)) {
-            throw new Exception($"Poke member failed");
+            throw new Exception($"Group poke failed");
         }
 
         return new PokeMemberResponse { };
@@ -40,15 +40,17 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<KickMemberResponse> KickMember(KickMemberRequest request, ServerCallContext context) {
         if (request.TargetCase != KickMemberRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException($"Not supported KickMemberRequest.TargetOneofCase({request.TargetCase})");
         }
 
-        if (!await _bot.KickGroupMember(
+        bool isSuccess = await _bot.KickGroupMember(
             (uint)request.GroupId,
             (uint)request.TargetUin,
-            request.HasRejectAddRequest && request.RejectAddRequest
-        // request.KickReason https://github.com/LagrangeDev/Lagrange.Core/pull/615
-        )) throw new Exception($"Poke member failed");
+            request.HasRejectAddRequest && request.RejectAddRequest,
+            request.HasKickReason ? request.KickReason : ""
+        );
+
+        if (!isSuccess) throw new Exception($"Kick group member failed");
 
         return new KickMemberResponse { };
     }
@@ -61,7 +63,9 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<ModifyMemberCardResponse> ModifyMemberCard(ModifyMemberCardRequest request, ServerCallContext context) {
         if (request.TargetCase != ModifyMemberCardRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException(
+                $"Not supported ModifyMemberCardRequest.TargetOneofCase({request.TargetCase})"
+            );
         }
 
         if (!await _bot.RenameGroupMember((uint)request.GroupId, (uint)request.TargetUin, request.Card)) {
@@ -73,7 +77,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<ModifyGroupNameResponse> ModifyGroupName(ModifyGroupNameRequest request, ServerCallContext context) {
         if (!await _bot.RenameGroup((uint)request.GroupId, request.GroupName)) {
-            throw new Exception($"Modify group name failed");
+            throw new Exception($"Rename group failed");
         }
 
         return new ModifyGroupNameResponse { };
@@ -81,7 +85,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<ModifyGroupRemarkResponse> ModifyGroupRemark(ModifyGroupRemarkRequest request, ServerCallContext context) {
         if (!await _bot.RemarkGroup((uint)request.GroupId, request.Remark)) {
-            throw new Exception($"Modify group remark failed");
+            throw new Exception($"Remark group failed");
         }
 
         return new ModifyGroupRemarkResponse { };
@@ -89,7 +93,9 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<SetGroupAdminResponse> SetGroupAdmin(SetGroupAdminRequest request, ServerCallContext context) {
         if (request.TargetCase != SetGroupAdminRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException(
+                $"Not supported SetGroupAdminRequest.TargetOneofCase({request.TargetCase})"
+            );
         }
 
         if (!await _bot.SetGroupAdmin((uint)request.GroupId, (uint)request.TargetUin, request.IsAdmin)) {
@@ -101,11 +107,13 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<SetGroupUniqueTitleResponse> SetGroupUniqueTitle(SetGroupUniqueTitleRequest request, ServerCallContext context) {
         if (request.TargetCase != SetGroupUniqueTitleRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException(
+                $"Not supported SetGroupUniqueTitleRequest.TargetOneofCase({request.TargetCase})"
+            );
         }
 
         if (!await _bot.GroupSetSpecialTitle((uint)request.GroupId, (uint)request.TargetUin, request.UniqueTitle)) {
-            throw new Exception($"Set group unique title failed");
+            throw new Exception($"Group set special title failed");
         }
 
         return new SetGroupUniqueTitleResponse { };
@@ -113,7 +121,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<SetGroupWholeBanResponse> SetGroupWholeBan(SetGroupWholeBanRequest request, ServerCallContext context) {
         if (!await _bot.MuteGroupGlobal((uint)request.GroupId, request.IsBan)) {
-            throw new Exception($"Set group whole ban failed");
+            throw new Exception($"Mute group global failed");
         }
 
         return new SetGroupWholeBanResponse { };
@@ -159,7 +167,9 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<GetGroupMemberInfoResponse> GetGroupMemberInfo(GetGroupMemberInfoRequest request, ServerCallContext context) {
         if (request.TargetCase != GetGroupMemberInfoRequest.TargetOneofCase.TargetUin) {
-            throw new NotSupportedException($"Not supported TargetOneofCase({request.TargetCase})");
+            throw new NotSupportedException(
+                $"Not supported GetGroupMemberInfoRequest.TargetOneofCase({request.TargetCase})"
+            );
         }
 
         List<BotGroupMember> members = await _bot.FetchMembers(
