@@ -45,4 +45,4 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           name: Lagrange.Kritor_${{ matrix.runtimeIdentifier }}_net8.0_NoSelfContained
-          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          path: Lagrange.Kritor/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
