@@ -1,49 +1,50 @@
-# Lagrange.Kritor
+# Lagrange.Kritor (WIP)
 
-# WIP
+## Get Started
 
-## Update Submodule
+1. Download .NET 8.0 Runtime from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0#:~:text=The%20runtime%20includes%20everything%20you%20need)
 
-```bash
-git submodule update --remote
-```
+2. Download the latest Artifacts from [Actions](https://github.com/LagrangeDev/Lagrange.Kritor/actions/workflows/build.yml)
 
-## Config
+3. Place `appsettings.json` in your working directory.
 
-```json
+4. Modify and write the following to `appsettings.json`
+
+5. Launch
+
+```jsonc
 {
     "Logging": {
         "LogLevel": {
-            "Default": "Trace"
+            "Default": "Information" // Log level, please modify to `Trace` when providing feedback on issues
         }
     },
     "Core": {
         "Protocol": {
-            "Platform": "Linux",
-            "Signer":{
-                "Url": "",
-                "Proxy": "http://127.0.0.1:9090"
+            "Platform": "Linux", // Protocol platform, please modify according to the Signer version
+            "Signer": {
+                "Url": "", // Signer server url
+                "Proxy": "" // Signer server proxy
             }
         },
         "Server": {
-            "AutoReconnect": true,
-            "GetOptimumServer": true
+            "AutoReconnect": true, // Whether to automatically reconnect to the TX server
+            "GetOptimumServer": true // Whether to get optimum server
         }
     },
     "Kritor": {
         "Network": {
-            "Address": "0.0.0.0",
-            "Port": 9000
+            "Address": "0.0.0.0", // Address of the Kritor service binding
+            "Port": 9000 // Port of the Kritor service binding
         },
         "Authentication": {
-            "Enabled": false,
-            "SuperTicket": "",
-            "Tickets": []
+            "Enabled": false, // Whether to enable authentication
+            "SuperTicket": "", // Ticket with maximum privileges
+            "Tickets": [] // Ticket list
         },
         "Message": {
-            "IgnoreSelf": false
+            "IgnoreSelf": false // Whether to ignore your own messages
         }
     }
 }
-
 ```
