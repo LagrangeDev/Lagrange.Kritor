@@ -37,9 +37,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore'
-
       - name: Build Lagrange.Kritor .NET 8.0
         run: dotnet publish Lagrange.Kritor/Lagrange.Kritor.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
