@@ -16,34 +16,60 @@
 {
     "Logging": {
         "LogLevel": {
-            "Default": "Information" // Log level, please modify to `Trace` when providing feedback on issues
+            // Log level, please modify to `Trace` when providing feedback on issues
+            "Default": "Information"
         }
     },
     "Core": {
         "Protocol": {
-            "Platform": "Linux", // Protocol platform, please modify according to the Signer version
+            // Protocol platform, please modify according to the Signer version
+            // Type: String ("Windows", "MacOs", "Linux")
+            // Default: "Linux"
+            "Platform": "Linux",
             "Signer": {
-                "Url": "", // Signer server url
-                "Proxy": "" // Signer server proxy
+                // Signer server url
+                // Type: String (HTTP URL, HTTPS URL)
+                "Url": "",
+                // Signer server proxy
+                // Type: String (HTTP URL)
+                "Proxy": ""
             }
         },
         "Server": {
-            "AutoReconnect": true, // Whether to automatically reconnect to the TX server
-            "GetOptimumServer": true // Whether to get optimum server
+            // Whether to automatically reconnect to the TX server
+            // Type: bool
+            // Default: false
+            "AutoReconnect": true,
+            // Whether to get optimum server
+            // Type: bool
+            // Default: false
+            "GetOptimumServer": true
         }
     },
     "Kritor": {
         "Network": {
-            "Address": "0.0.0.0", // Address of the Kritor service binding
-            "Port": 9000 // Port of the Kritor service binding
+            // Address of the Kritor service binding
+            // Type: String (ip)
+            "Address": "0.0.0.0",
+            // Port of the Kritor service binding
+            // Type: Number ([1-65535])
+            "Port": 9000
         },
         "Authentication": {
-            "Enabled": false, // Whether to enable authentication
-            "SuperTicket": "", // Ticket with maximum privileges
-            "Tickets": [] // Ticket list
+            // Whether to enable authentication
+            // Type: bool
+            "Enabled": false,
+            // Ticket with maximum privileges
+            // Type: String
+            "SuperTicket": "",
+            // Ticket list
+            // Type: String[]
+            "Tickets": []
         },
         "Message": {
-            "IgnoreSelf": false // Whether to ignore your own messages
+            // Whether to ignore your own messages
+            // Type: bool
+            "IgnoreSelf": false
         }
     }
 }
