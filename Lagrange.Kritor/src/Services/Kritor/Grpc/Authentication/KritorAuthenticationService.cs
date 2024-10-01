@@ -28,12 +28,12 @@ public class KritorAuthenticationService(ILogger<KritorAuthenticationService> lo
     }
 
     public override Task<GetAuthenticationStateResponse> GetAuthenticationState(GetAuthenticationStateRequest request, ServerCallContext context) {
-        return Task.FromResult(new GetAuthenticationStateResponse {
-            IsRequired = _authenticator.IsEnabled
-        });
+        return Task.FromResult(new GetAuthenticationStateResponse { IsRequired = _authenticator.IsEnabled });
     }
 
     public override Task<GetTicketResponse> GetTicket(GetTicketRequest request, ServerCallContext context) {
+        // _logger
+        
         if (!_authenticator.IsEnabled) {
             return Task.FromResult(new GetTicketResponse {
                 Code = TicketOperationResponseCode.Error,

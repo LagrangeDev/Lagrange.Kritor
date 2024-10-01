@@ -26,8 +26,8 @@ public class BotLoggerService(ILogger<BotContext> logger, BotContext bot) : IHos
     private void HandleBotLogEvent(BotContext _, BotLogEvent @event) {
         logger.LogBotContextLog(
             @event.Level switch {
-                CoreLogLevel.Debug => MsLogLevel.Debug,
-                CoreLogLevel.Verbose => MsLogLevel.Information,
+                CoreLogLevel.Debug => MsLogLevel.Trace,
+                CoreLogLevel.Verbose => MsLogLevel.Trace,
                 CoreLogLevel.Information => MsLogLevel.Information,
                 CoreLogLevel.Warning => MsLogLevel.Warning,
                 CoreLogLevel.Exception => MsLogLevel.Error,
