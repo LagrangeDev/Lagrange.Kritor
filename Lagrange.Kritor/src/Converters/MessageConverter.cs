@@ -8,6 +8,7 @@ using System.Xml;
 using Google.Protobuf.Collections;
 using Kritor.Common;
 using Lagrange.Core;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Kritor.Utilities;
@@ -260,9 +261,7 @@ public static class MessageConverter {
             Element.Types.ElementType.MarketFace => throw new NotSupportedException(
                 $"Not supported Element.Types.ElementType({Element.Types.ElementType.MarketFace})"
             ), // Kritor miss arg
-            Element.Types.ElementType.Forward => throw new NotSupportedException(
-                $"Not supported Element.Types.ElementType({Element.Types.ElementType.Forward})"
-            ), // TODO
+            Element.Types.ElementType.Forward => await builder.AddForwardElementAsync(bot, element.Forward),
             Element.Types.ElementType.Contact => throw new NotSupportedException(
                 $"Not supported Element.Types.ElementType({Element.Types.ElementType.Contact})"
             ),
@@ -304,5 +303,12 @@ public static class MessageConverter {
             }),
             _ => throw new NotSupportedException($"Not supported Element.Types.ElementType({element.Type})")
         };
+    }
+
+    public static async Task<MessageBuilder> AddForwardElementAsync(this MessageBuilder builder, BotContext bot, ForwardElement element) {
+        (int code, List<MessageChain>? chains) = await bot.GetMessagesByResId(element.ResId);
+        if (code != 0) throw new Exception($"Get message by res id failed");
+
+        return builder.MultiMsg([.. chains]);
     }
 }

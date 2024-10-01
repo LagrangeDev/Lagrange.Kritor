@@ -16,6 +16,7 @@ public static class MessageEventConverter {
                     Time = (ulong)new DateTimeOffset(message.Chain.Time).ToUnixTimeSeconds(),
                     MessageId = MessageIdUtility.BuildPrivateMessageId(message.Chain.FriendUin, message.Chain.Sequence),
                     MessageSeq = message.Chain.Sequence,
+                    Scene = Scene.Friend,
                     Private = new PrivateSender {
                         Uin = message.Chain.FriendUin,
                         Nick = message.Chain.FriendInfo?.Nickname
@@ -29,10 +30,11 @@ public static class MessageEventConverter {
                 Message = new PushMessageBody {
                     Time = (ulong)new DateTimeOffset(message.EventTime).ToUnixTimeSeconds(),
                     MessageId = MessageIdUtility.BuildGroupMessageId(
-                    message.Chain.GroupUin ?? throw new Exception("`GroupMessageEvent.Chain.GroupUin` is null"),
-                    message.Chain.Sequence
-                ),
+                        message.Chain.GroupUin ?? throw new Exception("`GroupMessageEvent.Chain.GroupUin` is null"),
+                        message.Chain.Sequence
+                    ),
                     MessageSeq = message.Chain.Sequence,
+                    Scene = Scene.Friend,
                     Group = new GroupSender {
                         GroupId = message.Chain.GroupUin?.ToString()
                         ?? throw new Exception("`GroupMessageEvent.Chain.GroupUin` is null"),
