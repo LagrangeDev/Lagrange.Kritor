@@ -20,6 +20,40 @@ using KritorXmlElement = Kritor.Common.XmlElement;
 namespace Lagrange.Kritor.Converters;
 
 public static class MessageConverter {
+    public static PushMessageBody ToPushMessageBody(this MessageChain chain) {
+        return chain.Type switch {
+            MessageChain.MessageType.Group => new PushMessageBody {
+                Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
+                MessageId = MessageIdUtility.BuildPrivateMessageId(chain.FriendUin, chain.Sequence),
+                MessageSeq = chain.Sequence,
+                Scene = Scene.Group,
+                Group = new GroupSender {
+                    GroupId = chain.GroupUin?.ToString() ?? throw new Exception($"`MessageChain.GroupUin` is null"),
+                    Uin = chain.FriendUin,
+                    Nick = chain.GroupMemberInfo?.MemberName ?? throw new Exception($"`MessageChain.GroupMemberInfo` is null")
+                },
+                Elements = { chain.ToElements() }
+            },
+            MessageChain.MessageType.Temp => throw new NotSupportedException(
+                $"Not supported MessageChain.MessageType({MessageChain.MessageType.Temp})"
+            ),
+            MessageChain.MessageType.Friend => new PushMessageBody {
+                Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
+                MessageId = MessageIdUtility.BuildPrivateMessageId(chain.FriendUin, chain.Sequence),
+                MessageSeq = chain.Sequence,
+                Scene = Scene.Friend,
+                Private = new PrivateSender {
+                    Uin = chain.FriendUin,
+                    Nick = chain.GroupMemberInfo?.MemberName ?? throw new Exception($"`MessageChain.GroupMemberInfo` is null")
+                },
+                Elements = { chain.ToElements() }
+            },
+            _ => throw new NotSupportedException(
+                $"Not supported MessageChain.MessageType({chain.Type})"
+            ),
+        };
+    }
+
     public static List<Element> ToElements(this MessageChain chain) {
         return chain.Aggregate(
             new List<Element>(),

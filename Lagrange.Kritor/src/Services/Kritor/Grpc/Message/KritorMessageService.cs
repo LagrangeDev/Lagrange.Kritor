@@ -128,34 +128,8 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
     }
 
     public override async Task<GetMessageResponse> GetMessage(GetMessageRequest request, ServerCallContext context) {
-        switch (request.Contact.Scene) {
-            case Scene.Unspecified: { throw new NotSupportedException($"Not supported Scene({Scene.Unspecified})"); }
-            case Scene.Group: { break; }
-            case Scene.Friend: { break; }
-            case Scene.Guild: { throw new NotSupportedException($"Not supported Scene({Scene.Guild})"); }
-            case Scene.StrangerFromGroup: {
-                throw new NotSupportedException($"Not supported Scene({Scene.StrangerFromGroup})");
-            }
-            case Scene.Nearby: { throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"); }
-            case Scene.Stranger: { throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"); }
-            default: { throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})"); }
-        }
-
         MessageChain chain = await _bot.GetMessageByMessageIdAsync(request.MessageId, context.CancellationToken);
-
-        return new GetMessageResponse {
-            Message = new PushMessageBody {
-                Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
-                MessageId = MessageIdUtility.BuildMessageId(chain),
-                MessageSeq = chain.Sequence,
-                Private = new PrivateSender {
-                    Uin = chain.FriendUin,
-                    Nick = chain.FriendInfo?.Nickname
-                        ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
-                },
-                Elements = { chain.ToElements() }
-            }
-        };
+        return new GetMessageResponse { Message = chain.ToPushMessageBody() };
     }
 
     public override async Task<GetMessageBySeqResponse> GetMessageBySeq(GetMessageBySeqRequest request, ServerCallContext context) {
@@ -184,19 +158,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
 
         if (chains == null || chains.Count == 0) throw new Exception($"Get group/c2c message failed");
 
-        return new GetMessageBySeqResponse {
-            Message = new PushMessageBody {
-                Time = (ulong)new DateTimeOffset(chains[0].Time).ToUnixTimeSeconds(),
-                MessageId = MessageIdUtility.BuildMessageId(chains[0]),
-                MessageSeq = chains[0].Sequence,
-                Private = new PrivateSender {
-                    Uin = chains[0].FriendUin,
-                    Nick = chains[0].FriendInfo?.Nickname
-                        ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
-                },
-                Elements = { chains[0].ToElements() }
-            }
-        };
+        return new GetMessageBySeqResponse { Message = chains[0].ToPushMessageBody() };
     }
 
     public override async Task<GetHistoryMessageResponse> GetHistoryMessage(GetHistoryMessageRequest request, ServerCallContext context) {
@@ -223,21 +185,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         } ?? throw new Exception($"Get group/c2c message failed");
 
-        IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
-            Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
-            MessageId = MessageIdUtility.BuildMessageId(chain),
-            MessageSeq = chain.Sequence,
-            Private = new PrivateSender {
-                Uin = chain.FriendUin,
-                Nick = chain.FriendInfo?.Nickname
-                    ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
-            },
-            Elements = { chain.ToElements() }
-        });
-
-        return new GetHistoryMessageResponse {
-            Messages = { messages }
-        };
+        return new GetHistoryMessageResponse { Messages = { chains.Select(MessageConverter.ToPushMessageBody) } };
     }
 
     public override async Task<GetHistoryMessageBySeqResponse> GetHistoryMessageBySeq(GetHistoryMessageBySeqRequest request, ServerCallContext context) {
@@ -262,21 +210,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         } ?? throw new Exception($"Get group/c2c message failed");
 
-        IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
-            Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
-            MessageId = MessageIdUtility.BuildMessageId(chain),
-            MessageSeq = chain.Sequence,
-            Private = new PrivateSender {
-                Uin = chain.FriendUin,
-                Nick = chain.FriendInfo?.Nickname
-                    ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
-            },
-            Elements = { chain.ToElements() }
-        });
-
-        return new GetHistoryMessageBySeqResponse {
-            Messages = { messages }
-        };
+        return new GetHistoryMessageBySeqResponse { Messages = { chains.Select(MessageConverter.ToPushMessageBody) } };
     }
 
     // WAITIMPL: Lagrange.Core
@@ -291,21 +225,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
 
         if (chains == null) return new DownloadForwardMessageResponse { Messages = { } };
 
-        IEnumerable<PushMessageBody> messages = chains.Select(chain => new PushMessageBody {
-            Time = (ulong)new DateTimeOffset(chain.Time).ToUnixTimeSeconds(),
-            MessageId = MessageIdUtility.BuildMessageId(chain),
-            MessageSeq = chain.Sequence,
-            Private = new PrivateSender {
-                Uin = chain.FriendUin,
-                Nick = chain.FriendInfo?.Nickname
-                    ?? throw new Exception("`FriendMessageEvent.Chain.FriendInfo.Nickname` is null")
-            },
-            Elements = { chain.ToElements() }
-        });
-
-        return new DownloadForwardMessageResponse {
-            Messages = { messages }
-        };
+        return new DownloadForwardMessageResponse { Messages = { chains.Select(MessageConverter.ToPushMessageBody) } };
     }
 
     // TODO: Need to look into it. (；′⌒`)
