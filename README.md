@@ -1,4 +1,4 @@
-# Lagrange.Kritor (WIP)
+# Lagrange.Kritor
 
 ## Get Started
 
