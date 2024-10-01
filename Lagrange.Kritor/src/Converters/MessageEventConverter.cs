@@ -34,7 +34,7 @@ public static class MessageEventConverter {
                         message.Chain.Sequence
                     ),
                     MessageSeq = message.Chain.Sequence,
-                    Scene = Scene.Friend,
+                    Scene = Scene.Group,
                     Group = new GroupSender {
                         GroupId = message.Chain.GroupUin?.ToString()
                         ?? throw new Exception("`GroupMessageEvent.Chain.GroupUin` is null"),
