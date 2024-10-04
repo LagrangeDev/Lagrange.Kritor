@@ -44,7 +44,7 @@ public static class MessageConverter {
                 Scene = Scene.Friend,
                 Private = new PrivateSender {
                     Uin = chain.FriendUin,
-                    Nick = chain.GroupMemberInfo?.MemberName ?? throw new Exception($"`MessageChain.GroupMemberInfo` is null")
+                    Nick = chain.FriendInfo?.Nickname ?? throw new Exception($"`MessageChain.FriendInfo` is null")
                 },
                 Elements = { chain.ToElements() }
             },

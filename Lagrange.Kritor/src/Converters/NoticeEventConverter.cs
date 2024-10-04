@@ -1,7 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Kritor.Event;
+using Lagrange.Core;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event;
 using Lagrange.Core.Event.EventArg;
+using Lagrange.Core.Message;
 using Lagrange.Kritor.Utilities;
 using static Kritor.Event.GroupMemberBanNotice.Types;
 using static Kritor.Event.GroupMemberDecreasedNotice.Types;
@@ -11,7 +17,7 @@ using static Kritor.Event.NoticeEvent.Types;
 namespace Lagrange.Kritor.Converters;
 
 public static class NoticeEventConverter {
-    public static EventStructure ToNoticeEvent(this EventBase @event) {
+    public static async Task<EventStructure> ToNoticeEvent(this EventBase @event, BotContext bot, CancellationToken token) {
         return @event switch {
             FriendPokeEvent poke => new EventStructure {
                 Type = EventType.Notice,
@@ -27,18 +33,7 @@ public static class NoticeEventConverter {
                     }
                 }
             },
-            // FriendRecallEvent recall => new EventStructure { // Recall need client sequence, time, random
-            //     Type = EventType.Notice,
-            //     Notice = new NoticeEvent {
-            //         Type = NoticeType.PrivateRecall,
-            //         Time = (ulong)new DateTimeOffset(recall.EventTime).ToUnixTimeSeconds(),
-            //         NoticeId = Guid.NewGuid().ToString(),
-            //         PrivateRecall = new PrivateRecallNotice {
-            //             OperatorUin = recall.FriendUin,
-            //             MessageId = MessageIdUtility.BuildPrivateMessageId(recall.FriendUin, recall.ClientSequence)
-            //         }
-            //     }
-            // },
+            FriendRecallEvent recall => await recall.ToNoticeEvent(bot, token),
             GroupPokeEvent poke => new EventStructure {
                 Type = EventType.Notice,
                 Notice = new NoticeEvent {
@@ -178,6 +173,25 @@ public static class NoticeEventConverter {
                 }
             },
             _ => throw new NotSupportedException($"Not supported Event({@event})"),
+        };
+    }
+
+    public static async Task<EventStructure> ToNoticeEvent(this FriendRecallEvent @event, BotContext bot, CancellationToken token) {
+        List<MessageChain>? chain = await bot.GetRoamMessage(@event.FriendUin, @event.Time, 1);
+        if (chain == null || chain.Count == 0) throw new Exception($"get roam message failed");
+
+        return new EventStructure {
+            Type = EventType.Notice,
+            Notice = new NoticeEvent {
+                Type = NoticeType.PrivateRecall,
+                Time = (ulong)new DateTimeOffset(@event.EventTime).ToUnixTimeSeconds(),
+                NoticeId = Guid.NewGuid().ToString(),
+                PrivateRecall = new PrivateRecallNotice {
+                    OperatorUin = @event.FriendUin,
+                    MessageId = MessageIdUtility.BuildGroupMessageId(@event.FriendUin, chain[0].Sequence),
+                    TipText = @event.Tip
+                }
+            }
         };
     }
 }
