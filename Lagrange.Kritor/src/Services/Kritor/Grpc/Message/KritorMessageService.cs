@@ -110,15 +110,11 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})");
         }
 
-        // WAITIMPL: Lagrange.Core
-        if (!request.IsSet) {
-            throw new NotSupportedException($"Not supported recall react");
-        }
-
         bool isSuccess = await _bot.GroupSetMessageReaction(
             MessageIdUtility.GetUin(request.MessageId),
             MessageIdUtility.GetSequence(request.MessageId),
-            $"{request.FaceId}"
+            $"{request.FaceId}",
+            request.IsSet
         );
 
         if (!isSuccess) throw new Exception($"Group set message reaction failed");
