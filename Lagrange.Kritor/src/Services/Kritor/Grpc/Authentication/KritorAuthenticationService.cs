@@ -53,10 +53,12 @@ public class KritorAuthenticationService(ILogger<KritorAuthenticationService> lo
         });
     }
 
+    // WONTSUPPORTED
     public override Task<AddTicketResponse> AddTicket(AddTicketRequest request, ServerCallContext context) {
         return base.AddTicket(request, context);
     }
 
+    // WONTSUPPORTED
     public override Task<DeleteTicketResponse> DeleteTicket(DeleteTicketRequest request, ServerCallContext context) {
         return base.DeleteTicket(request, context);
     }

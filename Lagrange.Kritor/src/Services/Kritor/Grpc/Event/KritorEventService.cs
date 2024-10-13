@@ -37,16 +37,16 @@ public class KritorEventService : EventServiceBase {
         bot.Invoker.OnFriendRecallEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
-        // bot.Invoker.On // TODO: PrivateFileUploadedNotice
+        // PrivateFileUploadedNotice // TODO: Lagrange
         bot.Invoker.OnGroupPokeEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
         bot.Invoker.OnGroupRecallEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
-        // bot.Invoker.On // TODO: GroupFileUploadedNotice
-        // bot.Invoker.On // TODO: GroupCardChangedNotice
-        // bot.Invoker.On // TODO: GroupUniqueTitleChangedNotice
+        // GroupFileUploadedNotice // TODO: Lagrange
+        // GroupCardChangedNotice // WONTSUPPORTED
+        // GroupUniqueTitleChangedNotice // TODO: Lagrange
         bot.Invoker.OnGroupEssenceEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
@@ -59,7 +59,7 @@ public class KritorEventService : EventServiceBase {
         bot.Invoker.OnGroupAdminChangedEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
-        // bot.Invoker.On // TODO: GroupSignInNotice
+        // GroupSignInNotice // TODO: Lagrange
         bot.Invoker.OnGroupMemberMuteEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
@@ -69,9 +69,9 @@ public class KritorEventService : EventServiceBase {
         bot.Invoker.OnGroupReactionEvent += async (_, e) => {
             OnKritorNoticeEvent?.Invoke(await e.ToNoticeEvent(bot, lifetime.ApplicationStopping));
         };
-        // bot.Invoker.On // TODO: GroupTransferNotice
-        // bot.Invoker.On // TODO: FriendIncreasedNotice
-        // bot.Invoker.On // TODO: FriendDecreasedNotice
+        // GroupTransferNotice // TODO: Lagrange
+        // FriendIncreasedNotice // TODO: Lagrange
+        // FriendDecreasedNotice // TODO: Lagrange
 
         // RequestEvent
         bot.Invoker.OnFriendRequestEvent += (_, e) => OnKritorRequestEvent?.Invoke(e.ToRequestEvent());

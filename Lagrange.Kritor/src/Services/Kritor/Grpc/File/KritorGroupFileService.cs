@@ -17,12 +17,14 @@ namespace Lagrange.Kritor.Services.Kritor.Grpc.File;
 public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
     private readonly BotContext _bot = bot;
 
+    // TODO: Lagrange
     public override Task<CreateFolderResponse> CreateFolder(CreateFolderRequest request, ServerCallContext context) {
         // (int retCode, string retMsg) = await _bot.GroupFSCreateFolder((uint)request.GroupId, request.Name);
 
         return base.CreateFolder(request, context);
     }
 
+    // TODO: Lagrange
     public override Task<RenameFolderResponse> RenameFolder(RenameFolderRequest request, ServerCallContext context) {
         // (int retCode, string retMsg) = await _bot.GroupFSRenameFolder((uint)request.GroupId, request.FolderId, request.Name);
 
@@ -74,8 +76,10 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
 
         return new GetFileSystemInfoResponse {
             FileCount = count,
+            // TODO: Lagrange
             // TotalCount =
             UsedSpace = space,
+            // TODO: Lagrange
             // TotalCount =
         };
     }
@@ -91,15 +95,20 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
                 FileId = entry.FileId,
                 FileName = entry.FileName,
                 FileSize = entry.FileSize,
+                // TODO: Lagrange
                 // BusId =
                 UploadTime = (ulong)new DateTimeOffset(entry.UploadedTime).ToUnixTimeSeconds(),
                 ExpireTime = (ulong)new DateTimeOffset(entry.ExpireTime).ToUnixTimeSeconds(),
                 ModifyTime = (ulong)new DateTimeOffset(entry.ModifiedTime).ToUnixTimeSeconds(),
                 DownloadTimes = entry.DownloadedTimes,
                 Uploader = entry.UploaderUin,
+                // TODO: Lagrange
                 // UploaderName =
+                // TODO: Lagrange
                 // Sha =
+                // TODO: Lagrange
                 // Sha3 =
+                // TODO: Lagrange
                 // Md5 =
             });
 
@@ -110,6 +119,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
                 TotalFileCount = entry.TotalFileCount,
                 CreateTime = (ulong)new DateTimeOffset(entry.CreateTime).ToUnixTimeSeconds(),
                 Creator = entry.CreatorUin,
+                // TODO: Lagrange
                 // CreatorName = entry.
             });
         return new GetFileListResponse {

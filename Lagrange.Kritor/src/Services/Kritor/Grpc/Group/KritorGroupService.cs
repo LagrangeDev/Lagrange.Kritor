@@ -136,8 +136,11 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
             GroupInfo = new GroupInfo {
                 GroupId = group.GroupUin,
                 GroupName = group.GroupName,
+                // TODO: Lagrange
                 // GroupRemark =
+                // TODO: Lagrange
                 // Owner =
+                // TODO: Lagrange
                 // Admins =
                 MaxMemberCount = group.MaxMember,
                 MemberCount = group.MemberCount,
@@ -152,8 +155,11 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         IEnumerable<GroupInfo> infos = groups.Select(group => new GroupInfo {
             GroupId = group.GroupUin,
             GroupName = group.GroupName,
+            // TODO: Lagrange
             // GroupRemark =
+            // TODO: Lagrange
             // Owner =
+            // TODO: Lagrange
             // Admins =
             MaxMemberCount = group.MaxMember,
             MemberCount = group.MemberCount,
@@ -186,17 +192,25 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
             GroupMemberInfo = new GroupMemberInfo {
                 Uin = member.Uin,
                 Nick = member.MemberName,
+                // TODO: Lagrange
                 // Age =
+                // TODO: Lagrange
                 // UniqueTitle =
+                // TODO: Lagrange
                 // UniqueTitleExpireTime =
                 Card = member.MemberCard,
                 JoinTime = (ulong)new DateTimeOffset(member.JoinTime).ToUnixTimeSeconds(),
                 LastActiveTime = (ulong)new DateTimeOffset(member.LastMsgTime).ToUnixTimeSeconds(),
                 Level = member.GroupLevel,
+                // TODO: Lagrange
                 // ShutUpTime =
+                // TODO: Lagrange
                 // Distance =
+                // TODO: Lagrange
                 // Honors =
+                // TODO: Lagrange
                 // Unfriendly =
+                // TODO: Lagrange
                 // CardChangeable =
             }
         };
@@ -211,17 +225,25 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         IEnumerable<GroupMemberInfo> infos = members.Select(member => new GroupMemberInfo {
             Uin = member.Uin,
             Nick = member.MemberName,
+            // TODO: Lagrange
             // Age =
+            // TODO: Lagrange
             // UniqueTitle =
+            // TODO: Lagrange
             // UniqueTitleExpireTime =
             Card = member.MemberCard,
             JoinTime = (ulong)new DateTimeOffset(member.JoinTime).ToUnixTimeSeconds(),
             LastActiveTime = (ulong)new DateTimeOffset(member.LastMsgTime).ToUnixTimeSeconds(),
             Level = member.GroupLevel,
+            // TODO: Lagrange
             // ShutUpTime =
+            // TODO: Lagrange
             // Distance =
+            // TODO: Lagrange
             // Honors =
+            // TODO: Lagrange
             // Unfriendly =
+            // TODO: Lagrange
             // CardChangeable =
         });
 
@@ -230,22 +252,32 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         };
     }
 
+    // TODO: Lagrange
     public override Task<GetProhibitedUserListResponse> GetProhibitedUserList(GetProhibitedUserListRequest request, ServerCallContext context) {
         return base.GetProhibitedUserList(request, context);
     }
 
-    public override Task<GetRemainCountAtAllResponse> GetRemainCountAtAll(GetRemainCountAtAllRequest request, ServerCallContext context) {
-        return base.GetRemainCountAtAll(request, context);
+    public override async Task<GetRemainCountAtAllResponse> GetRemainCountAtAll(GetRemainCountAtAllRequest request, ServerCallContext context) {
+        (uint forPrivate, uint forGroup) = await _bot.GroupRemainAtAll((uint)request.GroupId);
+
+        return new GetRemainCountAtAllResponse {
+            AccessAtAll = forPrivate != 0 && forGroup != 0,
+            RemainCountForGroup = forGroup,
+            RemainCountForSelf = forPrivate,
+        };
     }
 
+    // TODO: Lagrange
     public override Task<GetNotJoinedGroupInfoResponse> GetNotJoinedGroupInfo(GetNotJoinedGroupInfoRequest request, ServerCallContext context) {
         return base.GetNotJoinedGroupInfo(request, context);
     }
 
+    // TODO: Lagrange
     public override Task<GetGroupHonorResponse> GetGroupHonor(GetGroupHonorRequest request, ServerCallContext context) {
         return base.GetGroupHonor(request, context);
     }
 
+    // TODO: Lagrange
     public override Task<UploadGroupFileResponse> UploadGroupFile(UploadGroupFileRequest request, ServerCallContext context) {
         // await _bot.GroupFSUpload((uint)request.GroupId, new FileEntity(MSFile.ReadAllBytes(request.File), request.Name));
         return base.UploadGroupFile(request, context);

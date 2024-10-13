@@ -25,6 +25,10 @@ using Lagrange.Kritor.Services.Kritor.Grpc.File;
 using Lagrange.Kritor.Services.Kritor.Grpc.Group;
 using Lagrange.Kritor.Services.Kritor.Grpc.Guild;
 using Lagrange.Kritor.Services.Kritor.Grpc.Message;
+using Lagrange.Kritor.Services.Kritor.Grpc.Friend;
+using Lagrange.Kritor.Services.Kritor.Grpc.Process;
+using Lagrange.Kritor.Services.Kritor.Grpc.Reverse;
+using Lagrange.Kritor.Services.Kritor.Grpc.Web;
 
 namespace Lagrange.Kritor;
 internal class Program {
@@ -76,9 +80,13 @@ internal class Program {
         app.MapGrpcService<KritorCoreService>();
         app.MapGrpcService<KritorEventService>();
         app.MapGrpcService<KritorGroupFileService>();
+        app.MapGrpcService<KritorFriendService>();
         app.MapGrpcService<KritorGroupService>();
         app.MapGrpcService<KritorGuildService>();
         app.MapGrpcService<KritorMessageService>();
+        app.MapGrpcService<KritorProcessService>();
+        app.MapGrpcService<KritorReverseService>();
+        app.MapGrpcService<KritorWebService>();
         app.MapGet("/", () => "Hey kid, you're supposed to use gRPC to access it, not a browser.");
 
         app.Run();

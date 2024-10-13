@@ -20,6 +20,7 @@ public class KritorCoreService(BotContext bot) : CoreServiceBase {
         });
     }
 
+    // 
     public override Task<DownloadFileResponse> DownloadFile(DownloadFileRequest request, ServerCallContext context) {
         return base.DownloadFile(request, context);
     }
@@ -31,6 +32,7 @@ public class KritorCoreService(BotContext bot) : CoreServiceBase {
         });
     }
 
+    // WONTSUPPORTED
     public override Task<SwitchAccountResponse> SwitchAccount(SwitchAccountRequest request, ServerCallContext context) {
         return base.SwitchAccount(request, context);
     }

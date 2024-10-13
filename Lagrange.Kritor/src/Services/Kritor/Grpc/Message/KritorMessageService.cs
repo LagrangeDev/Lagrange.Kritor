@@ -77,6 +77,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
         };
     }
 
+    // TODO: Lagrange
     public override Task<SetMessageReadResponse> SetMessageReaded(SetMessageReadRequest request, ServerCallContext context) {
         return base.SetMessageReaded(request, context);
     }

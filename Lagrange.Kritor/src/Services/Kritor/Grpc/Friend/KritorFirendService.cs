@@ -11,7 +11,7 @@ using static Kritor.Friend.FriendService;
 
 namespace Lagrange.Kritor.Services.Kritor.Grpc.Friend;
 
-public class KritorFirendService(BotContext bot) : FriendServiceBase {
+public class KritorFriendService(BotContext bot) : FriendServiceBase {
     private readonly BotContext _bot = bot;
 
     public override async Task<GetFriendListResponse> GetFriendList(GetFriendListRequest request, ServerCallContext context) {
@@ -22,9 +22,13 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
             Qid = friend.Qid,
             Nick = friend.Nickname,
             Remark = friend.Remarks,
+            // TODO: Lagrange
             // Level =
+            // TODO: Lagrange
             // Age =
+            // TODO: Lagrange
             // VoteCnt =
+            // TODO: Lagrange
             // Gender =
             FriendGroupId = (int)friend.Group.GroupId
         });
@@ -43,10 +47,15 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
                 Qid = friend.Qid,
                 Nick = friend.Nickname,
                 Remark = friend.Remarks,
+                // TODO: Lagrange
                 // Level =
+                // TODO: Lagrange
                 // Birthday =
+                // TODO: Lagrange
                 // LoginDay =
+                // TODO: Lagrange
                 // VoteCnt =
+                // TODO: Lagrange
                 // IsSchoolVerified =
             });
 
@@ -64,10 +73,13 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
                 Uin = user.Uin,
                 Qid = user.Qid,
                 Nick = user.Nickname,
+                // TODO: Lagrange
                 // Remark =
                 Level = user.Level,
                 Birthday = (ulong)new DateTimeOffset(user.Birthday).ToUnixTimeSeconds(),
+                // TODO: Lagrange
                 // LoginDay =
+                // TODO: Lagrange
                 // VoteCnt =
                 IsSchoolVerified = string.IsNullOrWhiteSpace(user.School)
             });
@@ -78,10 +90,12 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
         };
     }
 
+    // TODO: Lagrange
     public override Task<SetProfileCardResponse> SetProfileCard(SetProfileCardRequest request, ServerCallContext context) {
         return base.SetProfileCard(request, context);
     }
 
+    // TODO: Lagrange
     public override Task<IsBlackListUserResponse> IsBlackListUser(IsBlackListUserRequest request, ServerCallContext context) {
         return base.IsBlackListUser(request, context);
     }
@@ -94,14 +108,17 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
         return new VoteUserResponse { };
     }
 
+    // WONTSUPPORTED
     public override Task<GetUidByUinResponse> GetUidByUin(GetUidByUinRequest request, ServerCallContext context) {
         return base.GetUidByUin(request, context);
     }
 
+    // WONTSUPPORTED
     public override Task<GetUinByUidResponse> GetUinByUid(GetUinByUidRequest request, ServerCallContext context) {
         return base.GetUinByUid(request, context);
     }
 
+    // TODO: Lagrange
     public override Task<UploadPrivateChatFileResponse> UploadPrivateFile(PrivateChatFileRequest request, ServerCallContext context) {
         // bool v = await _bot.UploadFriendFile((uint)request.TargetUin, new FileEntity(request.File));
 
