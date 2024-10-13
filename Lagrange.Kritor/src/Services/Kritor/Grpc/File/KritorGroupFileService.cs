@@ -44,7 +44,7 @@ public class KritorGroupFileService(BotContext bot) : GroupFileServiceBase {
             ),
             UploadFileRequest.DataOneofCase.File => new FileEntity([.. request.File], "Lagrange.Kritor Upload File"),
             UploadFileRequest.DataOneofCase.FileName => throw new NotImplementedException(
-                $"FileName? Didn't understand what it was?"
+                "FileName? Didn't understand what it was?"
             ),
             UploadFileRequest.DataOneofCase.FilePath => new FileEntity(request.FilePath),
             UploadFileRequest.DataOneofCase.FileUrl => new FileEntity(

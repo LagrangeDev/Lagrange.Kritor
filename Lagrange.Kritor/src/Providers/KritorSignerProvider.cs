@@ -29,18 +29,19 @@ public class KritorSignerProvider(string? url, string? proxy) : SignProvider {
 
         if (_url == null) return null;
 
-        using HttpRequestMessage request = new() {
-            Method = HttpMethod.Post,
-            RequestUri = new(_url),
-            Content = new StringContent(
-                $"{{\"cmd\":\"{cmd}\",\"seq\":{seq},\"src\":\"{Convert.ToHexString(body)}\"}}",
-                new MediaTypeHeaderValue("application/json")
-            )
-        };
+        using HttpRequestMessage request = new();
+        request.Method = HttpMethod.Post;
+        request.RequestUri = new(_url);
+        request.Content = new StringContent(
+            $"{{\"cmd\":\"{cmd}\",\"seq\":{seq},\"src\":\"{Convert.ToHexString(body)}\"}}",
+            new MediaTypeHeaderValue("application/json")
+        );
 
-        HttpResponseMessage message = _client.Send(request);
+        using HttpResponseMessage message = _client.Send(request);
 
-        if (message.StatusCode != HttpStatusCode.OK) throw new Exception($"Signer server returned a {message.StatusCode}");
+        if (message.StatusCode != HttpStatusCode.OK) {
+            throw new Exception($"Signer server returned a {message.StatusCode}");
+        }
 
         JsonElement json = JsonDocument.Parse(message.Content.ReadAsStream()).RootElement;
 

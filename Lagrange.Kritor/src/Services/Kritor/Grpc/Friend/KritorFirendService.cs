@@ -87,7 +87,7 @@ public class KritorFirendService(BotContext bot) : FriendServiceBase {
     }
 
     public override async Task<VoteUserResponse> VoteUser(VoteUserRequest request, ServerCallContext context) {
-        if (request.HasTargetUin) throw new Exception($"Uin is null");
+        if (request.HasTargetUin) throw new NotSupportedException("Not supported uin is null");
 
         if (!await _bot.Like((uint)request.TargetUin, request.VoteCount)) throw new Exception("Like failed");
 

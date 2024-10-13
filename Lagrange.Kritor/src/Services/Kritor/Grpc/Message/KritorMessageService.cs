@@ -49,7 +49,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
 
         if (code != 0) throw new Exception($"(Code {code}) Get messages by res id failed");
 
-        if (chains == null) throw new Exception($"Get messages by res id result is null");
+        if (chains == null) throw new Exception("Get messages by res id result is null");
 
         uint uin = uint.Parse(request.Contact.Peer);
 
@@ -100,7 +100,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         };
 
-        if (!isSuccess) throw new Exception($"Recall group/friend message failed");
+        if (!isSuccess) throw new Exception("Recall group/friend message failed");
 
         return new RecallMessageResponse { };
     }
@@ -117,7 +117,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             request.IsSet
         );
 
-        if (!isSuccess) throw new Exception($"Group set message reaction failed");
+        if (!isSuccess) throw new Exception("Group set message reaction failed");
 
         return new ReactMessageWithEmojiResponse { };
     }
@@ -151,7 +151,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
         };
 
-        if (chains == null || chains.Count == 0) throw new Exception($"Get group/c2c message failed");
+        if (chains == null || chains.Count == 0) throw new Exception("Get group/c2c message failed");
 
         return new GetMessageBySeqResponse { Message = chains[0].ToPushMessageBody() };
     }
@@ -178,7 +178,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
-        } ?? throw new Exception($"Get group/c2c message failed");
+        } ?? throw new Exception("Get group/c2c message failed");
 
         return new GetHistoryMessageResponse { Messages = { chains.Select(MessageConverter.ToPushMessageBody) } };
     }
@@ -203,7 +203,7 @@ public class KritorMessageService(BotContext bot) : MessageServiceBase {
             Scene.Nearby => throw new NotSupportedException($"Not supported Scene({Scene.Nearby})"),
             Scene.Stranger => throw new NotSupportedException($"Not supported Scene({Scene.Stranger})"),
             _ => throw new NotSupportedException($"Not supported Scene({request.Contact.Scene})")
-        } ?? throw new Exception($"Get group/c2c message failed");
+        } ?? throw new Exception("Get group/c2c message failed");
 
         return new GetHistoryMessageBySeqResponse { Messages = { chains.Select(MessageConverter.ToPushMessageBody) } };
     }

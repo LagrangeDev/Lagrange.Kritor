@@ -28,9 +28,9 @@ public static class MessageConverter {
                 MessageSeq = chain.Sequence,
                 Scene = Scene.Group,
                 Group = new GroupSender {
-                    GroupId = chain.GroupUin?.ToString() ?? throw new Exception($"`MessageChain.GroupUin` is null"),
+                    GroupId = chain.GroupUin?.ToString() ?? throw new Exception("`MessageChain.GroupUin` is null"),
                     Uin = chain.FriendUin,
-                    Nick = chain.GroupMemberInfo?.MemberName ?? throw new Exception($"`MessageChain.GroupMemberInfo` is null")
+                    Nick = chain.GroupMemberInfo?.MemberName ?? throw new Exception("`MessageChain.GroupMemberInfo` is null")
                 },
                 Elements = { chain.ToElements() }
             },
@@ -44,7 +44,7 @@ public static class MessageConverter {
                 Scene = Scene.Friend,
                 Private = new PrivateSender {
                     Uin = chain.FriendUin,
-                    Nick = chain.FriendInfo?.Nickname ?? throw new Exception($"`MessageChain.FriendInfo` is null")
+                    Nick = chain.FriendInfo?.Nickname ?? throw new Exception("`MessageChain.FriendInfo` is null")
                 },
                 Elements = { chain.ToElements() }
             },
@@ -215,7 +215,7 @@ public static class MessageConverter {
             ),
             Element.Types.ElementType.Text => builder.Text(element.Text.Text),
             Element.Types.ElementType.At => builder.Mention(
-                element.At.HasUin ? (uint)element.At.Uin : throw new Exception("Not support uin is null")
+                element.At.HasUin ? (uint)element.At.Uin : throw new NotSupportedException("Not support uin is null")
             ),
             Element.Types.ElementType.Face => builder.Face(
                 (ushort)element.Face.Id,
@@ -234,7 +234,9 @@ public static class MessageConverter {
                     $"Not supported ImageElement.DataOneofCase({ImageElement.DataOneofCase.FileName})"
                 ),
                 ImageElement.DataOneofCase.FilePath => builder.Image(element.Image.FilePath),
-                ImageElement.DataOneofCase.FileUrl => builder.Image(HttpClientUtility.GetBytes(element.Image.FileUrl)),
+                ImageElement.DataOneofCase.FileUrl => builder.Image(
+                    await HttpClientUtility.GetBytesAsync(element.Image.FileUrl, token)
+                ),
                 _ => throw new NotSupportedException(
                     $"Not supported ImageElement.DataOneofCase({element.Image.DataCase})"
                 ),
@@ -248,7 +250,9 @@ public static class MessageConverter {
                     $"Not supported VoiceElement.DataOneofCase({VoiceElement.DataOneofCase.FileName})"
                 ),
                 VoiceElement.DataOneofCase.FilePath => builder.Record(element.Voice.FilePath),
-                VoiceElement.DataOneofCase.FileUrl => builder.Record(HttpClientUtility.GetBytes(element.Voice.FileUrl)),
+                VoiceElement.DataOneofCase.FileUrl => builder.Record(
+                    await HttpClientUtility.GetBytesAsync(element.Voice.FileUrl, token)
+                ),
                 _ => throw new NotSupportedException(
                     $"Not supported VoiceElement.DataOneofCase({element.Voice.DataCase})"
                 ),
@@ -262,7 +266,9 @@ public static class MessageConverter {
                     $"Not supported VideoElement.DataOneofCase({VideoElement.DataOneofCase.FileName})"
                 ),
                 VideoElement.DataOneofCase.FilePath => builder.Video(element.Video.FilePath),
-                VideoElement.DataOneofCase.FileUrl => builder.Video(HttpClientUtility.GetBytes(element.Video.FileUrl)),
+                VideoElement.DataOneofCase.FileUrl => builder.Video(
+                    await HttpClientUtility.GetBytesAsync(element.Video.FileUrl, token)
+                ),
                 _ => throw new NotSupportedException(
                     $"Not supported VideoElement.DataOneofCase({element.Video.DataCase})"
                 ),
@@ -341,7 +347,7 @@ public static class MessageConverter {
 
     public static async Task<MessageBuilder> AddForwardElementAsync(this MessageBuilder builder, BotContext bot, ForwardElement element) {
         (int code, List<MessageChain>? chains) = await bot.GetMessagesByResId(element.ResId);
-        if (code != 0) throw new Exception($"Get message by res id failed");
+        if (code != 0) throw new Exception("Get message by res id failed");
 
         return builder.MultiMsg([.. chains]);
     }

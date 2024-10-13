@@ -6,23 +6,22 @@ using Kritor.Event;
 using Lagrange.Core;
 using Lagrange.Kritor.Converters;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using static Kritor.Event.EventService;
 
 namespace Lagrange.Kritor.Services.Kritor.Grpc.Event;
 
 public class KritorEventService : EventServiceBase {
-    // public event Action<EventStructure>? OnKritorCoreEvent; // NoEvent
+    // private event Action<EventStructure>? OnKritorCoreEvent; // NoEvent
 
-    public event Action<EventStructure>? OnKritorMessageEvent;
+    private event Action<EventStructure>? OnKritorMessageEvent;
 
-    public event Action<EventStructure>? OnKritorNoticeEvent;
+    private event Action<EventStructure>? OnKritorNoticeEvent;
 
-    public event Action<EventStructure>? OnKritorRequestEvent;
+    private event Action<EventStructure>? OnKritorRequestEvent;
 
-    public readonly CancellationToken _ct;
+    private readonly CancellationToken _ct;
 
-    public KritorEventService(ILogger<KritorEventService> logger, BotContext bot, IHostApplicationLifetime lifetime) {
+    public KritorEventService(BotContext bot, IHostApplicationLifetime lifetime) {
         _ct = lifetime.ApplicationStopping;
 
         // CoreEvent
@@ -99,7 +98,7 @@ public class KritorEventService : EventServiceBase {
             case EventType.Message: { OnKritorMessageEvent += handler; break; }
             case EventType.Notice: { OnKritorNoticeEvent += handler; break; }
             case EventType.Request: { OnKritorRequestEvent += handler; break; }
-        };
+        }
 
         CancellationTokenSource.CreateLinkedTokenSource(_ct, context.CancellationToken).Token.Register(tcs.SetResult);
         try {
@@ -110,7 +109,7 @@ public class KritorEventService : EventServiceBase {
                 case EventType.Message: { OnKritorMessageEvent -= handler; break; }
                 case EventType.Notice: { OnKritorNoticeEvent -= handler; break; }
                 case EventType.Request: { OnKritorRequestEvent -= handler; break; }
-            };
+            }
         }
     }
 

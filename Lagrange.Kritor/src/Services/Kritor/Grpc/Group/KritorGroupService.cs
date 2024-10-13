@@ -20,7 +20,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         }
 
         if (!await _bot.MuteGroupMember((uint)request.GroupId, (uint)request.TargetUin, request.Duration)) {
-            throw new Exception($"mute group failed");
+            throw new Exception("Mute group member failed");
         }
 
         return new BanMemberResponse { };
@@ -32,7 +32,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         }
 
         if (!await _bot.GroupPoke((uint)request.GroupId, (uint)request.TargetUin)) {
-            throw new Exception($"Group poke failed");
+            throw new Exception("Group poke failed");
         }
 
         return new PokeMemberResponse { };
@@ -50,7 +50,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
             request.HasKickReason ? request.KickReason : ""
         );
 
-        if (!isSuccess) throw new Exception($"Kick group member failed");
+        if (!isSuccess) throw new Exception("Kick group member failed");
 
         return new KickMemberResponse { };
     }
@@ -69,7 +69,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         }
 
         if (!await _bot.RenameGroupMember((uint)request.GroupId, (uint)request.TargetUin, request.Card)) {
-            throw new Exception($"Modify member card failed");
+            throw new Exception("Rename group member failed");
         }
 
         return new ModifyMemberCardResponse { };
@@ -77,7 +77,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<ModifyGroupNameResponse> ModifyGroupName(ModifyGroupNameRequest request, ServerCallContext context) {
         if (!await _bot.RenameGroup((uint)request.GroupId, request.GroupName)) {
-            throw new Exception($"Rename group failed");
+            throw new Exception("Rename group failed");
         }
 
         return new ModifyGroupNameResponse { };
@@ -85,7 +85,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<ModifyGroupRemarkResponse> ModifyGroupRemark(ModifyGroupRemarkRequest request, ServerCallContext context) {
         if (!await _bot.RemarkGroup((uint)request.GroupId, request.Remark)) {
-            throw new Exception($"Remark group failed");
+            throw new Exception("Remark group failed");
         }
 
         return new ModifyGroupRemarkResponse { };
@@ -99,7 +99,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         }
 
         if (!await _bot.SetGroupAdmin((uint)request.GroupId, (uint)request.TargetUin, request.IsAdmin)) {
-            throw new Exception($"Set group admin failed");
+            throw new Exception("Set group admin failed");
         }
 
         return new SetGroupAdminResponse { };
@@ -113,7 +113,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
         }
 
         if (!await _bot.GroupSetSpecialTitle((uint)request.GroupId, (uint)request.TargetUin, request.UniqueTitle)) {
-            throw new Exception($"Group set special title failed");
+            throw new Exception("Group set special title failed");
         }
 
         return new SetGroupUniqueTitleResponse { };
@@ -121,7 +121,7 @@ public class KritorGroupService(BotContext bot) : GroupServiceBase {
 
     public override async Task<SetGroupWholeBanResponse> SetGroupWholeBan(SetGroupWholeBanRequest request, ServerCallContext context) {
         if (!await _bot.MuteGroupGlobal((uint)request.GroupId, request.IsBan)) {
-            throw new Exception($"Mute group global failed");
+            throw new Exception("Mute group global failed");
         }
 
         return new SetGroupWholeBanResponse { };

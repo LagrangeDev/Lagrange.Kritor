@@ -2,14 +2,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Lagrange.Core;
-using Microsoft.Extensions.Logging;
 using GrpcInterceptor = Grpc.Core.Interceptors.Interceptor;
 
 namespace Lagrange.Kritor.Interceptors;
 
-public class KritorVersionInterceptor(ILogger<KritorVersionInterceptor> logger, BotContext bot) : GrpcInterceptor {
-    private readonly ILogger<KritorVersionInterceptor> _logger = logger;
-
+public class KritorVersionInterceptor(BotContext bot) : GrpcInterceptor {
     private readonly string _uin = bot.BotUin.ToString();
 
     private readonly string _version = Assembly.GetAssembly(typeof(Program))?

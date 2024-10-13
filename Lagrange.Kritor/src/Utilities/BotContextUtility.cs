@@ -21,7 +21,7 @@ public static class BotContextUtility {
         } else throw new NotSupportedException($"Not supported message id({id})");
 
         if (chains == null || chains.Count != 1) {
-            throw new Exception($"Get group/c2c message failed");
+            throw new Exception("Get group/c2c message failed");
         }
 
         return chains[0];

@@ -178,7 +178,7 @@ public static class NoticeEventConverter {
 
     public static async Task<EventStructure> ToNoticeEvent(this FriendRecallEvent @event, BotContext bot, CancellationToken token) {
         List<MessageChain>? chain = await bot.GetRoamMessage(@event.FriendUin, @event.Time, 1);
-        if (chain == null || chain.Count == 0) throw new Exception($"get roam message failed");
+        if (chain == null || chain.Count == 0) throw new Exception("Get roam message failed");
 
         return new EventStructure {
             Type = EventType.Notice,

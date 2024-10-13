@@ -5,7 +5,7 @@ using QRCoder;
 
 namespace Lagrange.Kritor.Utilities;
 
-public class QRCodeUtility {
+public static class QrCodeUtility {
     // "▄", "▀", " ", "█"
     public static string BuildConsoleString(string text) {
         StringBuilder console = new();

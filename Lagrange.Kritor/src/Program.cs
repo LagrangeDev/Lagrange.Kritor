@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Linq;
 using Lagrange.Kritor.Interceptors;
 using Lagrange.Kritor.Services.Kritor.Grpc.Core;
@@ -47,7 +46,7 @@ internal class Program {
 
             string? addressString = kritorSection.GetRequiredSection("Address").Get<string>();
             if (!IPAddress.TryParse(addressString, out IPAddress? address)) {
-                throw new Exception($"Unknown Address({addressString})");
+                throw new Exception($"Parse IPAddress({addressString}) failed");
             }
 
             int port = kritorSection.GetRequiredSection("Port").Get<int>();
@@ -99,12 +98,14 @@ internal class Program {
         IConfiguration protocolConfig = coreConfig.GetRequiredSection("Protocol");
         IConfiguration serverConfig = coreConfig.GetRequiredSection("Server");
 
+        string? platformText = protocolConfig.GetSection("Platform").Get<string>();
+
         return new BotConfig() {
-            Protocol = protocolConfig.GetSection("Platform").Get<string>() switch {
+            Protocol = platformText switch {
                 "Windows" => Protocols.Windows,
                 "MacOs" => Protocols.MacOs,
                 "Linux" or null => Protocols.Linux,
-                string protocol => throw new NotSupportedException($"Not supported Core.Protocol.Server.Platform({protocol})")
+                _ => throw new NotSupportedException($"Not supported Core.Protocol.Server.Platform({platformText})")
             },
             AutoReconnect = serverConfig.GetSection("AutoReconnect").Get<bool>(),
             GetOptimumServer = serverConfig.GetSection("GetOptimumServer").Get<bool>(),
@@ -120,7 +121,7 @@ internal class Program {
         }
 
         return JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText("device.json"))
-            ?? throw new Exception("Unable to deserialize device.json");
+            ?? throw new Exception("Deserialize device.json failed");
     }
 
     private static BotKeystore BotKeystoreFactory(IServiceProvider _) {
@@ -131,7 +132,7 @@ internal class Program {
         }
 
         return JsonSerializer.Deserialize<BotKeystore>(File.ReadAllText("keystore.json"))
-            ?? throw new Exception("Unable to deserialize keystore.json");
+            ?? throw new Exception("Deserialize keystore.json failed");
     }
 
     private static BotContext BotContextFactory(IServiceProvider provider) {
@@ -143,8 +144,6 @@ internal class Program {
     }
 
     private static Authenticator AuthenticatorFactory(IServiceProvider provider) {
-        ILogger<Authenticator> logger = provider.GetRequiredService<ILogger<Authenticator>>();
-
         IConfigurationSection config = provider.GetRequiredService<IConfiguration>()
             .GetRequiredSection("Kritor")
             .GetRequiredSection("Authentication");
@@ -153,24 +152,19 @@ internal class Program {
 
         bool enabled = config.GetRequiredSection("Enabled").Get<bool>();
 
-        return new(
-            enabled,
-            enabled
-                ? config.GetRequiredSection("SuperTicket").Get<string>()
-                    ?? throw new Exception(
-                        "When Kritor.Authentication.Enabled is true, Kritor.Authentication.SuperTicket cannot be null"
-                    )
-                : "",
-            bot.BotUin.ToString(),
-            enabled
-                ? config.GetRequiredSection("Tickets").GetChildren()
-                    .Select((tickets) => {
-                        return tickets.Get<string>()
-                            ?? throw new Exception(
-                                "When Kritor.Authentication.Enabled is true, Kritor.Authentication.Tickets cannot be null"
-                            );
-                    }).ToArray()
-                : []
-        );
+        string super = enabled
+            ? config.GetRequiredSection("SuperTicket").Get<string>() ?? throw new Exception(
+                "When Kritor.Authentication.Enabled is true, Kritor.Authentication.SuperTicket cannot be null"
+            )
+            : "";
+
+        string[] tickets = enabled
+            ? config.GetRequiredSection("Tickets").GetChildren()
+                .Select((tickets) => tickets.Get<string>() ?? throw new Exception(
+                    "When Kritor.Authentication.Enabled is true, Kritor.Authentication.Tickets cannot be null"
+                )).ToArray()
+            : [];
+
+        return new(enabled, super, bot.BotUin.ToString(), tickets);
     }
 }

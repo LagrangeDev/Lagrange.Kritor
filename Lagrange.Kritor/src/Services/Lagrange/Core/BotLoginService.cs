@@ -13,20 +13,18 @@ using MsLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Lagrange.Kritor.Services.Lagrange.Core;
 
-public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLifetime lifetime, BotContext bot) : IHostedService {
-    private readonly IHostApplicationLifetime _lifetime = lifetime;
-
+public class BotLoginService(ILogger<BotLoginService> logger, BotContext bot) : IHostedService {
     public async Task StartAsync(CancellationToken token) {
         bot.Invoker.OnBotOnlineEvent += HandleBotOnlineEvent;
 
         // EasyLogin success
-        if (bot.UpdateKeystore().Session.TempPassword != null && await bot.LoginByPassword().WaitAsync(token)) return;
+        if (bot.UpdateKeystore().Session.TempPassword != null && await bot.LoginByPassword(token)) return;
 
         // QRCode Login
-        (string url, _) = await bot.FetchQrCode().WaitAsync(token) ?? throw new Exception("Fetch qr code failed");
-        logger.LogQrCode(QRCodeUtility.BuildConsoleString(url));
+        (string url, _) = await bot.FetchQrCode() ?? throw new Exception("Fetch qr code failed");
+        logger.LogQrCode(QrCodeUtility.BuildConsoleString(url));
 
-        await bot.LoginByQrCode().WaitAsync(token);
+        await bot.LoginByQrCode(token);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) {
@@ -35,7 +33,7 @@ public class BotLoginService(ILogger<BotLoginService> logger, IHostApplicationLi
         return Task.CompletedTask;
     }
 
-    private void HandleBotOnlineEvent(BotContext bot, BotOnlineEvent e) {
+    private void HandleBotOnlineEvent(BotContext _, BotOnlineEvent e) {
         File.WriteAllText("device.json", JsonSerializer.Serialize(bot.UpdateDeviceInfo()));
         File.WriteAllText("keystore.json", JsonSerializer.Serialize(bot.UpdateKeystore()));
 
