@@ -347,7 +347,7 @@ public static class MessageConverter {
 
     public static async Task<MessageBuilder> AddForwardElementAsync(this MessageBuilder builder, BotContext bot, ForwardElement element) {
         (int code, List<MessageChain>? chains) = await bot.GetMessagesByResId(element.ResId);
-        if (code != 0) throw new Exception("Get message by res id failed");
+        if (code != 0 || chains == null) throw new Exception("Get message by res id failed");
 
         return builder.MultiMsg([.. chains]);
     }
